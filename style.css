@@ -111,11 +111,11 @@
     width: 100%;
 }
 
-.m-xat-form {
+.m_xat-form {
     margin: 0px auto 0px auto;
     display: flex;
-    width: 700px;
-    min-width: 390px;
+   /* width: 700px;
+    min-width: 390px;*/
     align-items: flex-start;
     overflow: auto;
     background: rgb(244, 243, 244);

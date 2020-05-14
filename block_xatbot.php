@@ -15,16 +15,11 @@ class block_xatbot extends block_base {
 
 		$file = $this->manageFile();
 		
-		$filteropt = new stdClass;
-		$filteropt->overflowdiv = true;
-		$filteropt->noclean = true;
-		$filteropt->filter = false;
-		
-		$this->content 			= new stdClass;
-
-		$this->content->text 	= format_text($file->get_content(), FORMAT_HTML, $fileropt);	
+		$this->content->text = $file->get_content();	
 		$this->content->footer 	= '';
-		$this->page->requires->css('/blocks/xatbot/style.css');
+		$this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/xatbot/style.css'));
+		$this->page->requires->jquery();
+		$this->page->requires->js(new moodle_url($CFG->wwwroot . '/blocks/xatbot/index.js'));
 		//$this->page->requires->js_call_amd('blocks/xatbot', '/blocks/xatbot/index.js');
 		return $this->content;
 	}

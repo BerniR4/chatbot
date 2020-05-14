@@ -1,24 +1,10 @@
 var DEFAULT_TIME_DELAY = 1000;
-var $chatlogs = $('.chatlogs');
+var $m_xat_logs = $('.m_xat-logs');
 var isReceiving = 2;
+var URL = '../blocks/xatbot/botman/controller.php';
 
 $('document').ready(function(){
-
-	// Hide the switch input type button initially
-	$("#switchInputType").toggle();
-	// If the switch input type button is pressed
-	$("#switchInputType").click(function(event) {
-		// Toggle which input type is shown
-		if($('.buttonResponse').is(":visible")) {
-			$("#switchInputType").attr("src", "Images/multipleChoice.png");
-		} else {
-			$("#switchInputType").attr("src", "Images/keyboard.png");
-		}
-		$('textarea').toggle();
-		$('.buttonResponse').toggle();
-	});
-
-
+	console.log('foo');
 	//----------------------User Sends Message Methods--------------------------------//
 	// Method which executes once the enter key on the keyboard is pressed
 	// Primary function sends the text which the user typed
@@ -29,12 +15,12 @@ $('document').ready(function(){
 			// Ignore the default function of the enter key(Dont go to a new line)
 			event.preventDefault();
 
-			if (isReceiving === 0 && $("#inputDiv .input")[0].value !== "") {
+			if (isReceiving === 0 && $("#m_xat-inputDiv .m_xat-input")[0].value !== "") {
 				// Call the method for sending a message, pass in the text from the user
 				send(this.value);
 
 				// reset the size of the text area
-				$(".input").attr("rows", "1");
+				$(".m_xat-input").attr("rows", "1");
 
 				// Clear the text area
 				this.value = "";
@@ -42,21 +28,25 @@ $('document').ready(function(){
 		}
 	});
 
-    $("#rec").click(function(event) {
+    $("#m_xat-rec").click(function(event) {
 
-		if ($("#inputDiv .input")[0].value != "" && isReceiving === 0) {
-			send($(".input").val());
+		if ($("#m_xat-inputDiv .m_xat-input")[0].value != "" && isReceiving === 0) {
+			send($(".m_xat-input").val());
 
-			$(".input").attr("rows", "1");
-			$(".input").val("");
+			$(".m_xat-input").attr("rows", "1");
+			$(".m_xat-input").val("");
 		}
     });
 
 	$.ajax({
 		type: "POST",
-		url: '../../Controller/getResponse.php',
-		data: {message: 'restart session'},
+		url: URL,
+		//url: '../blocks/xatbot/botman/BotmanController.php',
+		data: JSON.stringify({driver: 'web', message: 'hi'}),
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
 		success: function(data) {
+			console.log(data);
 			newRecievedMessage(data);
 		},
 		error: function(error) {
@@ -70,8 +60,10 @@ $('document').ready(function(){
 
 	$.ajax({
 		type: "POST",
-		url: '../../Controller/getResponse.php',
-		data: {message: 'Hola'},
+		url: URL,
+		data: JSON.stringify({driver: 'web', message: 'hi'}),
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
 		success: function(data) {
 			newRecievedMessage(data);
 		},
@@ -85,12 +77,12 @@ function send(text) {
 	isReceiving = 1;
 
 	// Create a div with the text that the user typed in
-	$chatlogs.append(
-        $('<div/>', {'class': 'chat self'}).append(
-            $('<p/>', {'class': 'chat-message', 'text': text})));
+	$m_xat_logs.append(
+        $('<div/>', {'class': 'm_xat m_xat-self'}).append(
+            $('<p/>', {'class': 'm_xat-message', 'text': text})));
 
 	// Find the last message in the chatlogs
-	var $sentMessage = $(".chatlogs .chat").last();
+	var $sentMessage = $(".m_xat-logs .m_xat").last();
 
 	checkVisibility($sentMessage);
 	setTimeout(function() {
@@ -99,8 +91,10 @@ function send(text) {
 	console.log(text);
 	$.ajax({
         type: "POST",
-        url: '../../Controller/getResponse.php',
-        data: {message: text},
+		url: URL,
+		data: JSON.stringify({driver: 'web', message: 'hi'}),
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
         success: function(data) {
 			isReceiving = 2;
 			newRecievedMessage(data);
@@ -208,14 +202,17 @@ function createNewMessage(message) {
 	// $('#rec').css('visibility', 'visible');
 	// $('textarea').css('visibility', 'visible');
 
+	//jsonParsed = 
+	
+
 	// Append a new div to the chatlogs body, with an image and the text from API.AI
-	$chatlogs.append(
-		$('<div/>', {'class': 'chat friend'}).append(
-			$('<div/>', {'class': 'user-photo'}).append($('<img src="Images/ana.JPG" />')),
-			$('<p/>', {'class': 'chat-message', 'text': message})));
+	$m_xat_logs.append(
+		$('<div/>', {'class': 'm_xat m_xat-bot'}).append(
+			//$('<div/>', {'class': 'm_xat-user-photo'}).append($('<img src="../blocks/xatbot/images/ana.jpg" />')),
+			$('<p/>', {'class': 'm_xat-message', 'text': message.messages[0].text})));
 
 	// Find the last message in the chatlogs
-	var $newMessage = $(".chatlogs .chat").last();
+	var $newMessage = $(".m_xat-logs .m_xat").last();
 
 	// Call the method to see if the message is visible
 	checkVisibility($newMessage);
@@ -226,8 +223,8 @@ function createNewMessage(message) {
 // As well as hides the textarea and send button
 function showLoading()
 {
-	$chatlogs.append($('#loadingGif'));
-	$("#loadingGif").show();
+	$m_xat_logs.append($('#m_xat-loadingGif'));
+	$("#m_xat-loadingGif").show();
 }
 
 
@@ -235,10 +232,10 @@ function showLoading()
 // Function which hides the typing indicator
 function hideLoading()
 {
-	$("#loadingGif").hide();
+	$("#m_xat-loadingGif").hide();
 
 	// reset the size of the text area
-	$(".input").attr("rows", "1");
+	$(".m_xat-input").attr("rows", "1");
 }
 
 
@@ -247,7 +244,7 @@ function hideLoading()
 function checkVisibility(message)
 {
 	// Scroll the view down a certain amount
-	$chatlogs.stop().animate({scrollTop: $chatlogs[0].scrollHeight});
+	$m_xat_logs.stop().animate({scrollTop: $m_xat_logs[0].scrollHeight});
 
 	if (isReceiving === 2)
 		isReceiving = 0;
