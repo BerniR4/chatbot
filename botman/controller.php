@@ -20,7 +20,6 @@ DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
 $botman = BotManFactory::create($config);
 
 //$botman->say('Message', 'my-recipient-user-id', WebDriver::class);
-
 // Give the bot something to listen for.
 $botman->hears('Hello', function ($bot) {
 	$bot->reply('Hello yourself');
@@ -28,9 +27,9 @@ $botman->hears('Hello', function ($bot) {
 $botman->hears('.*Hello.*', function ($bot) {
 	$bot->reply('Hello!');
 });
-$botman->hears('{text}', function ($bot, $text) {
-	$bot->reply('Your First Response' .$text);
-});
+/*$botman->hears('{text}', function ($bot, $text) {
+	$bot->reply('Your First Response' .$text . $request);
+});*/
 /*
 $botman->fallback(function($bot) {
 	$bot->reply('No entenc què dius');

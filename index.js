@@ -37,14 +37,21 @@ $('document').ready(function(){
 			$(".m_xat-input").val("");
 		}
     });
-
+	
+	var boundary = (new Date()).getTime();
+	var dataParts = [];
+	dataParts.push("--" + boundary,
+		'Content-Disposition:form-data; name="driver"',
+		'', 'web',
+		'--' + boundary,
+		'Content-Disposition:form-data; name="message"',
+		'', 'hello',
+		'--' + boundary + '--');
 	$.ajax({
 		type: "POST",
 		url: URL,
-		//url: '../blocks/xatbot/botman/BotmanController.php',
-		data: JSON.stringify({driver: 'web', message: 'hi'}),
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
+		data: dataParts.join('\r\n'),
+		contentType: "multipart/form-data; boundary=" + boundary,
 		success: function(data) {
 			console.log(data);
 			newRecievedMessage(data);
@@ -58,19 +65,6 @@ $('document').ready(function(){
 		showLoading();
 	}, 200);
 
-	$.ajax({
-		type: "POST",
-		url: URL,
-		data: JSON.stringify({driver: 'web', message: 'hi'}),
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		success: function(data) {
-			newRecievedMessage(data);
-		},
-		error: function(error) {
-			newRecievedMessage(error);
-		}
-	});
 });
 
 function send(text) {
@@ -89,12 +83,20 @@ function send(text) {
 		showLoading();
 	}, 200);
 	console.log(text);
+	var boundary = (new Date()).getTime();
+	var dataParts = [];
+	dataParts.push("--" + boundary,
+		'Content-Disposition:form-data; name="driver"',
+		'', 'web',
+		'--' + boundary,
+		'Content-Disposition:form-data; name="message"',
+		'', text,
+		'--' + boundary + '--');
 	$.ajax({
         type: "POST",
 		url: URL,
-		data: JSON.stringify({driver: 'web', message: 'hi'}),
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
+		data: dataParts.join('\r\n'),
+		contentType: "multipart/form-data; boundary=" + boundary,
         success: function(data) {
 			isReceiving = 2;
 			newRecievedMessage(data);
