@@ -4,7 +4,6 @@ var isReceiving = 2;
 var URL = '../blocks/xatbot/botman/controller.php';
 
 $('document').ready(function(){
-	console.log('foo');
 	//----------------------User Sends Message Methods--------------------------------//
 	// Method which executes once the enter key on the keyboard is pressed
 	// Primary function sends the text which the user typed
@@ -98,6 +97,7 @@ function send(text) {
 		data: dataParts.join('\r\n'),
 		contentType: "multipart/form-data; boundary=" + boundary,
         success: function(data) {
+			console.log(data);
 			isReceiving = 2;
 			newRecievedMessage(data);
 		},
@@ -203,16 +203,14 @@ function createNewMessage(message) {
 	// // Show the send button and the text area
 	// $('#rec').css('visibility', 'visible');
 	// $('textarea').css('visibility', 'visible');
-
-	//jsonParsed = 
 	
+	for (i = 0; i < message.messages.length; i++) { 
 
-	// Append a new div to the chatlogs body, with an image and the text from API.AI
-	$m_xat_logs.append(
-		$('<div/>', {'class': 'm_xat m_xat-bot'}).append(
-			//$('<div/>', {'class': 'm_xat-user-photo'}).append($('<img src="../blocks/xatbot/images/ana.jpg" />')),
-			$('<p/>', {'class': 'm_xat-message', 'text': message.messages[0].text})));
-
+		// Append a new div to the chatlogs body, with an image and the text from API.AI
+		$m_xat_logs.append(
+			$('<div/>', {'class': 'm_xat m_xat-bot'}).append(
+			$('<p/>', {'class': 'm_xat-message', 'text': message.messages[i].text})));
+	}
 	// Find the last message in the chatlogs
 	var $newMessage = $(".m_xat-logs .m_xat").last();
 

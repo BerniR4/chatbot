@@ -48,14 +48,14 @@
 
 .m_xat-user-photo img{
     background-color: rgb(39, 119, 180);
-    padding: 8px;
+    /*padding: 8px;*/
     width: 100%;
 }
 
 .m_xat .m_xat-message {
     padding: 15px;
     margin: 5px 10px 0;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .m_xat-user-photo {
@@ -69,7 +69,7 @@
 .m_xat-bot .m_xat-message {
     color: black;
     width: auto;
-    max-width: 70%;
+    max-width: 85%;
     background: rgb(229, 229, 234);
     border-radius: 20px 20px 20px 0;
 }
@@ -140,7 +140,7 @@
     border: 2px solid lightblue;
     border-radius: 20px;
     resize: none;
-    font-size: 18px;
+    font-size: 16px;
     color: #000;
     margin: 15px 0px 15px 10px;
     display:block;
