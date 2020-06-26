@@ -21,8 +21,16 @@ class block_xatbot extends block_base {
 		$this->content->footer 	= '';
 		$this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/xatbot/style.css'));
 		$this->page->requires->jquery();
-		$this->page->requires->js(new moodle_url($CFG->wwwroot . '/blocks/xatbot/index.js'));
+		//$this->page->requires->js(new moodle_url($CFG->wwwroot . '/blocks/xatbot/index.js'));
 		//$this->page->requires->js_call_amd('blocks/xatbot', '/blocks/xatbot/index.js');
+		
+		$jsmodule = array(
+			'name' => 'module',
+			'fullpath' => '/blocks/xatbot/module.js',
+			'requires' => array(),
+			'strings' => array()
+		);
+		$this->page->requires->js_init_call('M.block_xatbot.init', array('test', 13), false, $jsmodule);
 		return $this->content;
 	}
 
@@ -54,6 +62,7 @@ class block_xatbot extends block_base {
 				.'</div>'
 			.'</html>';
 	}
+
 /*
 	public function manageFile () {	
 		global $CFG;
