@@ -13,11 +13,10 @@ class block_xatbot extends block_base {
 			return $this->content;
 		}
 
-		//$file = $this->manageFile();
-
-		//$this->content->text = $file->get_content();
+		//global $COURSE;
+		//echo(var_dump($COURSE)); 
+		
 		$this->content->text = $this->get_http();
-
 		$this->content->footer 	= '';
 		$this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/xatbot/style.css'));
 		$this->page->requires->jquery();
@@ -30,7 +29,7 @@ class block_xatbot extends block_base {
 			'requires' => array(),
 			'strings' => array()
 		);
-		$this->page->requires->js_init_call('M.block_xatbot.init', array('test', 13), false, $jsmodule);
+		$this->page->requires->js_init_call('M.block_xatbot.init', array(), false, $jsmodule);
 		return $this->content;
 	}
 

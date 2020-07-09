@@ -1,0 +1,54 @@
+<?php
+
+//namespace block_xatbot;
+
+require_once("$CFG->libdir/externallib.php");
+require_once("$CFG->dirroot/blocks/xatbot/botman/vendor/autoload.php");
+
+use BotMan\BotMan\BotMan;
+use BotMan\BotMan\BotManFactory;
+use BotMan\BotMan\Drivers\DriverManager;
+
+class external extends external_api {
+	
+	public static function test_call_parameters() {
+		return new external_function_parameters(
+			array(
+				'test' => new external_multiple_structure(
+					new external_single_structure(
+						array(
+							'courseid' => new external_value(PARAM_INT, 'id of course'),
+							'name' => new external_value(PARAM_TEXT, 'multilang compatible name'),
+						)
+					)
+				)
+			)
+		);
+	}
+
+	public static function test_call_returns() {
+		return new external_multiple_structure(
+			new external_single_structure(
+				array(
+					'courseid' => new external_value(PARAM_INT, 'group record id'),
+					'name' => new external_value(PARAM_TEXT, 'test text'),
+				)
+			)
+		);
+	}
+
+	public static function test_call($test) {
+		global $USER, $COURSE;
+		$config = [];
+
+		DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
+
+		$botman = BotManFactory::create($config);
+		$botman->fallback(function($bot) {
+			$bot->reply($test);
+		});
+		$test[0]['name'] = $test[0]['name'] . $USER->id . ' xDD' . $COURSE->id;
+		return $test;
+	}
+
+}

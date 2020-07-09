@@ -3,16 +3,12 @@ M.block_xatbot = {
     URL : '../blocks/xatbot/botman/controller.php',
     name : 'block_xatbot',
     isReceiving : 2,
-    token : '',
-    courseId : 0,
 
     /**
      * Initiates the connection with botman and adds events listeners
      */
-    init : function(Y, token, course) {
+    init : function(Y) {
         var self = this;
-        this.token = token;
-        this.courseId = course;
         //Add listeners
         $('textarea.m_xat-input').on('keypress', this.manageKeyPress);
         $('#m_xat-rec').on('click', this.manageSend);
