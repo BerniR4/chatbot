@@ -1,18 +1,4 @@
-/** {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    box-sizing: border-box;
-    font-weight: 100;
-}
-
-.m_xat-body {
-    background:linear-gradient(to right, rgba(147,206,222,1) 0%, rgba(117,189,209,1) 41%, rgba(73,165,191,1) 100%);
-}
-*/
 .m_xat-box {
- /*   width: 700px;
-    min-width: 390px;*/
     background: white;
     padding: 25px;
     margin: 0px auto 0px auto;
@@ -114,8 +100,6 @@
 .m_xat-form {
     margin: 0px auto 0px auto;
     display: flex;
-   /* width: 700px;
-    min-width: 390px;*/
     align-items: flex-start;
     overflow: auto;
     background: rgb(244, 243, 244);
@@ -158,20 +142,6 @@
     margin: auto;
 }
 
-/* Old Orange button for speaking, now we have an icon of a microphone*/
-/*.chat-form button {
-    height: 65px;
-    background: rgba(255, 153, 0, .7);;
-    padding: 5px 15px;
-    font-size: 30px;
-    color: white;
-    border: none;
-    margin: 0 10px;
-    border-radius: 3px;
-    box-shadow: 0 3px 0 rgba(255, 153, 0, .7);;
-    cursor: pointer;
-}*/
-
 .m_xat-form button:hover{
     background: rgb(255, 153, 0);
 }
@@ -180,7 +150,6 @@
     margin: 10px;
     border-radius: 20px;
 }
-
 
 .m_xat-buttonResponse {
     color: white;
@@ -199,7 +168,6 @@
 .m_xat-buttonResponse:hover{
         background: rgb(100, 200, 255);
 }
-
 
 #m_xat-switchInputType{
     max-width: 40px;

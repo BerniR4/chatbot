@@ -102,13 +102,33 @@ M.block_xatbot = {
     		//Append a new div to the chatlogs body
     		$('.m_xat-logs').append(
     			$('<div/>', {'class': 'm_xat m_xat-bot'}).append(
-    			$('<p/>', {'class': 'm_xat-message', 'text': message.messages[i].text})));
+                    $('<p/>', {'class': 'm_xat-message', 'text': message.messages[i].text})
+                )
+            );
+                
+            if (message.messages[i].type === "actions") {
+                this.createButton(message.messages[i].actions);
+            }
     	}
     	// Find the last message in the chatlogs
     	var newMessage = $(".m_xat-logs .m_xat").last();
 
     	// Call the method to see if the message is visible
     	this.checkVisibility(newMessage);
+    },
+
+    createButton : function(actions) {
+        var self = this;
+        $('.m_xat-logs').append($('<div/>', {'class': 'm_xat m_xat-bot'}));
+        for (i = 0; i < actions.length; i++) {
+            $('.m_xat-logs>.m_xat.m_xat-bot:last-child').append(
+                $('<div/>', {'class': 'm_xat-button', 'text': actions[i].name})
+            );
+            $('.m_xat-logs>.m_xat.m_xat-bot>.m_xat-button:last-child')
+                .on('click', {message: actions[i].value}, function(event){
+                    self.send(event.data.message);
+            });
+        }
     },
 
     showLoading : function() {

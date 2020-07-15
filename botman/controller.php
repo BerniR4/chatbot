@@ -1,13 +1,16 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require(__DIR__ . '/../../../config.php');
+require __DIR__ . '/../../../config.php' ;
 require_once __DIR__ . '/../../../lib/moodlelib.php';
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use BotMan\BotMan\Messages\Attachments\File;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
+use BotMan\BotMan\Messages\Incoming\Answer;
+use BotMan\BotMan\Messages\Outgoing\Actions\Button;
+use App\Http\Controllers\BotManController;
 
 include 'prova.php';
 
@@ -48,7 +51,9 @@ $botman->hears('User.*', function ($bot) {
 	$bot->reply('UserID = '. $user->getId());
 });
 
-$botman->hears('Prova', 'Prova\MyBotCommands@handle');
+$botman->hears('Prova', function($bot) {
+	$bot->startConversation(new Prova\MyBotCommands);
+});//'Prova\MyBotCommands@handle');
 
 $botman->fallback(function($bot) {
 	global $USER;
