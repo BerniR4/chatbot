@@ -2,7 +2,8 @@
 
 require_once 'vendor/autoload.php';
 require __DIR__ . '/../../../config.php' ;
-require_once __DIR__ . '/../../../lib/moodlelib.php';
+//require_once __DIR__ . '/../../../lib/moodlelib.php';
+
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
@@ -13,6 +14,7 @@ use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use App\Http\Controllers\BotManController;
 
 include 'prova.php';
+//include __DIR__ . '/../classes/event/test.php';
 
 $config = [
 	// Your driver-specific configuration
@@ -33,7 +35,7 @@ $botman->hears('Hello', function ($bot) {
 	$bot->reply('Per cercar un recurs, utilitza la paraula clau "Recurs", seguit d\'allò que vulguis cercar. Per exemple: "Recurs prova"');
 });
 
-$botman->hears('Recurs .*', function ($bot) {
+$botman->hears('Attachment .*', function ($bot) {
 	$attachment = new File('../blocks/xatbot/block_xatbot.php', [
 		'custom_payload' => true,
 	]);
@@ -51,16 +53,31 @@ $botman->hears('User.*', function ($bot) {
 	$bot->reply('UserID = '. $user->getId());
 });
 
+$botman->hears('Event.*', function ($bot) {
+	global $PAGE;
+	$event = \block_xatbot\event\xatbot_viewed::create(array(
+		'context' => $PAGE->context, 
+	));
+	$event->trigger();
+	$user = $bot->getUser();
+	$bot->reply('UserID = '. $user->getId());
+});
+
 $botman->hears('Prova', function($bot) {
 	$bot->startConversation(new Prova\MyBotCommands);
 });//'Prova\MyBotCommands@handle');
+
+
+
+
+
+
+
 
 $botman->fallback(function($bot) {
 	global $USER;
 	$bot->reply('No entenc què dius' . $USER->firstname);
 });
-
-
 
 // Start listening
 $botman->listen();
