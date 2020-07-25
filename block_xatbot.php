@@ -13,15 +13,10 @@ class block_xatbot extends block_base {
 			return $this->content;
 		}
 
-		//global $COURSE;
-		//echo(var_dump($COURSE)); 
-		
 		$this->content->text = $this->get_http();
 		$this->content->footer 	= '';
 		$this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/xatbot/style.css'));
 		$this->page->requires->jquery();
-		//$this->page->requires->js(new moodle_url($CFG->wwwroot . '/blocks/xatbot/index.js'));
-		//$this->page->requires->js_call_amd('blocks/xatbot', '/blocks/xatbot/index.js');
 		
 		$jsmodule = array(
 			'name' => 'module',

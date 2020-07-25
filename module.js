@@ -99,16 +99,21 @@ M.block_xatbot = {
 
     	for (i = 0; i < message.messages.length; i++) {
 
-    		//Append a new div to the chatlogs body
-    		$('.m_xat-logs').append(
-    			$('<div/>', {'class': 'm_xat m_xat-bot'}).append(
-                    $('<p/>', {'class': 'm_xat-message', 'text': message.messages[i].text})
-                )
-            );
-                
-            if (message.messages[i].type === "actions") {
-                this.createButton(message.messages[i].actions);
+            if (message.messages[i].attachment != null) {
+                this.createAttachment(message.messages[i]);
+            } else {
+                //Append a new div to the chatlogs body
+                $('.m_xat-logs').append(
+                    $('<div/>', {'class': 'm_xat m_xat-bot'}).append(
+                        $('<p/>', {'class': 'm_xat-message', 'text': message.messages[i].text})
+                    )
+                );
+                    
+                if (message.messages[i].type === "actions") {
+                    this.createButton(message.messages[i].actions);
+                }
             }
+    		
     	}
     	// Find the last message in the chatlogs
     	var newMessage = $(".m_xat-logs .m_xat").last();
@@ -128,6 +133,16 @@ M.block_xatbot = {
                 .on('click', {message: actions[i].value}, function(event){
                     self.send(event.data.message);
             });
+        }
+    },
+
+    createAttachment : function(message) {
+        if (message.attachment.type = "file") {
+            $('.m_xat-logs').append(
+                $('<div/>', {'class': 'm_xat m_xat-bot'}).append(
+                    $('<a/>', {'class': 'm_xat-message', 'text': message.text, 'href': message.attachment.url})
+                )
+            );
         }
     },
 

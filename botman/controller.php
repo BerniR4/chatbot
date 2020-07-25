@@ -1,7 +1,7 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require __DIR__ . '/../../../config.php' ;
+require_once __DIR__ . '/../../../config.php' ;
 //require_once __DIR__ . '/../../../lib/moodlelib.php';
 
 use BotMan\BotMan\BotMan;
@@ -14,7 +14,7 @@ use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use App\Http\Controllers\BotManController;
 
 include 'prova.php';
-//include __DIR__ . '/../classes/event/test.php';
+include __DIR__ . '/functionalities/resource_listener.php';
 
 $config = [
 	// Your driver-specific configuration
@@ -36,10 +36,10 @@ $botman->hears('Hello', function ($bot) {
 });
 
 $botman->hears('Attachment .*', function ($bot) {
-	$attachment = new File('../blocks/xatbot/block_xatbot.php', [
+	$attachment = new File('..\/blocks\/xatbot\/block_xatbot.php', [
 		'custom_payload' => true,
 	]);
-	$message = OutgoingMessage::create('Aquí està el fitxer:<a href="google.com">Exemple</a>')
+	$message = OutgoingMessage::create('Aquí està el fitxer:')
 		->withAttachment($attachment);
 	$bot->reply($message);
 });
@@ -70,13 +70,22 @@ $botman->hears('Prova', function($bot) {
 
 
 
+//Començament de les funcionalitats reals (AQUEST COMENTARI S'HAURÀ DE BORRAR)
 
+$botman->hears('Recurs ([a-zA-Z ]*)', 'resource_listener::handle_resource_request');
+//$botman->hears('Recurs ([a-zA-Z ]*)(|, course ([a-zA-Z ]*))(|, alumn ([a-zA-Z ]*))', 'Xatbot\resource_listener::handle_resource_request');
 
+//function ($bot, $resourceName, $o1, $curs, $o2, $alumn){
+//	$bot->reply('recurs: ' . $resourceName . ' course: ' . $curs . ' alumn: ' . $alumn);
+//});
+
+$botman->hears('call me {name}(| the {adjective})', function ($bot, $name, $o1, $adjective) {
+    $bot->reply('Hello '.$name.'. You truly are '.$adjective);
+});
 
 
 $botman->fallback(function($bot) {
-	global $USER;
-	$bot->reply('No entenc què dius' . $USER->firstname);
+	$bot->reply('No entenc què dius');
 });
 
 // Start listening
