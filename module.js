@@ -97,10 +97,12 @@ M.block_xatbot = {
         //Hide the typing indicator
     	this.hideLoading();
 
-    	for (i = 0; i < message.messages.length; i++) {
+        i = 0;
+    	while (i < message.messages.length) {
 
             if (message.messages[i].attachment != null) {
-                this.createAttachment(message.messages[i]);
+                this.createAttachment(message.messages.slice(i, i + 4));
+                i += 3;
             } else {
                 //Append a new div to the chatlogs body
                 $('.m_xat-logs').append(
@@ -112,6 +114,7 @@ M.block_xatbot = {
                 if (message.messages[i].type === "actions") {
                     this.createButton(message.messages[i].actions);
                 }
+                i++;
             }
     		
     	}
@@ -136,11 +139,17 @@ M.block_xatbot = {
         }
     },
 
-    createAttachment : function(message) {
-        if (message.attachment.type = "file") {
+    createAttachment : function(messages) {
+        if (messages[0].attachment.type == "file" && messages[2].attachment.type == "file") {
             $('.m_xat-logs').append(
                 $('<div/>', {'class': 'm_xat m_xat-bot'}).append(
-                    $('<a/>', {'class': 'm_xat-message', 'text': message.text, 'href': message.attachment.url})
+                    $('<p/>', {'class': 'm_xat-message'}).append(
+                        $('<a/>', {'text': messages[0].text, 'href': messages[0].attachment.url,  
+                            'target': '_blank'})
+                    ).append(messages[1].text).append(
+                        $('<a/>', {'text': messages[2].text, 'href': messages[2].attachment.url,  
+                            'target': '_blank'})
+                    )
                 )
             );
         }
