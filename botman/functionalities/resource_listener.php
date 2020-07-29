@@ -18,7 +18,7 @@ class resource_listener {
         $url_search = self::search_resource_url($bot, $resourcename);
 
         if (!$file_search && !$url_search) {
-            $bot->reply('No s\'han trobat coincidencies');
+            $bot->reply(get_string('fullnoresourcematch', 'block_xatbot'));
         }
     }
 
@@ -36,7 +36,7 @@ class resource_listener {
             return false;
         }
 
-        $bot->reply('S\'han trobat les següents coincidencies:');
+        $bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_resource')));
 
         foreach ($rs as $record) {
             if (($record->visible || has_capability('moodle/course:viewhiddenactivities', 
@@ -49,7 +49,7 @@ class resource_listener {
                 $message = OutgoingMessage::create($record->name)
                     ->withAttachment($attachment);
                 $bot->reply($message);
-                $bot->reply(' - Curs: ');
+                $bot->reply(get_string('compresourcematchcourse', 'block_xatbot'));
 
                 $attachment = new File($CFG->wwwroot . '/course/view.php?id=' . $record->course, [
                     'custom_payload' => true,
@@ -72,7 +72,7 @@ class resource_listener {
             return false;
         }
 
-        $bot->reply('S\'han trobat les següents coincidencies:');
+        $bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
 
         foreach ($rs as $record) {
             if (has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course)) 
@@ -83,7 +83,7 @@ class resource_listener {
                 $message = OutgoingMessage::create($record->name)
                     ->withAttachment($attachment);
                 $bot->reply($message);
-                $bot->reply(' - Curs: ');
+                $bot->reply(get_string('compresourcematchcourse', 'block_xatbot'));
 
                 $attachment = new File($CFG->wwwroot . '/course/view.php?id=' . $record->course, [
                     'custom_payload' => true,

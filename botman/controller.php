@@ -31,8 +31,10 @@ $botman = BotManFactory::create($config);
 
 // Give the bot something to listen for.
 $botman->hears('Hello', function ($bot) {
-	$bot->reply('Bones! Sóc LSBot, un Xatbot que t\'ajudarà a cercar diferents recursos.');
-	$bot->reply('Per cercar un recurs, utilitza la paraula clau "Recurs", seguit d\'allò que vulguis cercar. Per exemple: "Recurs prova"');
+	$bot->reply(get_string('fullwelcome1', 'block_xatbot'));
+	$bot->reply(get_string('fullwelcome2', 'block_xatbot'));
+	//$bot->reply('Bones! Sóc LSBot, un Xatbot que t\'ajudarà a cercar diferents recursos.');
+	//$bot->reply('Per cercar un recurs, utilitza la paraula clau "Recurs", seguit d\'allò que vulguis cercar. Per exemple: "Recurs prova"');
 });
 
 $botman->hears('Attachment .*', function ($bot) {
@@ -72,7 +74,7 @@ $botman->hears('Prova', function($bot) {
 
 //Començament de les funcionalitats reals (AQUEST COMENTARI S'HAURÀ DE BORRAR)
 
-$botman->hears('Recurs ([a-zA-Z ]*)', 'resource_listener::handle_resource_request');
+$botman->hears(get_string('hearingresourcesearch', 'block_xatbot'), 'resource_listener::handle_resource_request');
 //$botman->hears('Recurs ([a-zA-Z ]*)(|, course ([a-zA-Z ]*))(|, alumn ([a-zA-Z ]*))', 'Xatbot\resource_listener::handle_resource_request');
 
 //function ($bot, $resourceName, $o1, $curs, $o2, $alumn){
