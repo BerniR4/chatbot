@@ -12,6 +12,9 @@ use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use App\Http\Controllers\BotManController;
+use BotMan\BotMan\Cache\SymfonyCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+
 
 include 'prova.php';
 include __DIR__ . '/functionalities/resource_listener.php';
@@ -27,14 +30,13 @@ $config = [
 DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
 
 // Create an instance
-$botman = BotManFactory::create($config);
+$adapter = new FilesystemAdapter();
+$botman = BotManFactory::create($config, new SymfonyCache($adapter));
 
 // Give the bot something to listen for.
 $botman->hears('Hello', function ($bot) {
 	$bot->reply(get_string('fullwelcome1', 'block_xatbot'));
 	$bot->reply(get_string('fullwelcome2', 'block_xatbot'));
-	//$bot->reply('Bones! Sóc LSBot, un Xatbot que t\'ajudarà a cercar diferents recursos.');
-	//$bot->reply('Per cercar un recurs, utilitza la paraula clau "Recurs", seguit d\'allò que vulguis cercar. Per exemple: "Recurs prova"');
 });
 
 $botman->hears('Attachment .*', function ($bot) {
@@ -84,7 +86,6 @@ $botman->hears(get_string('hearingresourcesearch', 'block_xatbot'), 'resource_li
 $botman->hears('call me {name}(| the {adjective})', function ($bot, $name, $o1, $adjective) {
     $bot->reply('Hello '.$name.'. You truly are '.$adjective);
 });
-
 
 $botman->fallback(function($bot) {
 	$bot->reply('No entenc què dius');

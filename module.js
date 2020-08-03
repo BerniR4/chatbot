@@ -57,7 +57,7 @@ M.block_xatbot = {
         }
     },
 
-    send : function(message) {
+    send : function(message, interactive = false) {
         var self = this;
         var boundary = (new Date()).getTime();
     	var dataParts = [];
@@ -66,7 +66,10 @@ M.block_xatbot = {
     		'', 'web',
     		'--' + boundary,
     		'Content-Disposition:form-data; name="message"',
-    		'', message,
+            '', message,
+            '--' + boundary,
+    		'Content-Disposition:form-data; name="interactive"',
+    		'', interactive,
     		'--' + boundary + '--');
     	$.ajax({
             type: "POST",
@@ -134,7 +137,7 @@ M.block_xatbot = {
             );
             $('.m_xat-logs>.m_xat.m_xat-bot>.m_xat-button:last-child')
                 .on('click', {message: actions[i].value}, function(event){
-                    self.send(event.data.message);
+                    self.send(event.data.message, true);
             });
         }
     },
