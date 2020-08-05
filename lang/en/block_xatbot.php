@@ -12,9 +12,13 @@ $string['fullwelcome2'] = 'To search for a resource, use the keyword "Resource",
         to search for. For example: "Resource test"';
 $string['fullresourcematch'] = 'Of type "{$a}", the following matches have been found:';
 $string['fullnoresourcematch'] = 'No matches have been found';
+$string['fullaskresourcetype'] = 'What type of resource do you want?';
 
 //Static message components
 $string['compresourcematchcourse'] = ' - Course: ';
 
-//Hearing messages
-$string['hearingresourcesearch'] = 'Resource ([a-zA-Z ]*)';
+//Hearing single requests
+$string['hearingresourcerequest'] = 'Resource ([a-zA-Z ]*)';
+
+//Hearing conversations
+$string['hearingresourceconver'] = '.*Resource';

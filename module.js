@@ -21,11 +21,12 @@ M.block_xatbot = {
     },
 
     manageKeyPress : function(event) {
+        var self = M.block_xatbot;
         //Check if key is enter
         if(event.which === 13 ) {
             //Ignore the default function of the enter key (Don't go to a new line)
             event.preventDefault();
-            M.block_xatbot.manageSend(event);
+            self.manageSend(event);
         }
     },
 
@@ -33,10 +34,9 @@ M.block_xatbot = {
         var self = M.block_xatbot;
         var input = $("#m_xat-inputDiv .m_xat-input")[0];
         //Check if the user is waiting a response and that the text is not empty
-        if (isReceiving === 0 && input.value !== "") {
+        if (self.isReceiving === 0 && input.value !== "") {
             //Call the method for sending a message, pass in the text from the user
-            isReceiving = 1;
-
+            self.isReceiving = 1;
             // Create a div with the text that the user typed in
             $('.m_xat-logs').append(
                 $('<div/>', {'class': 'm_xat m_xat-self'}).append(
@@ -77,11 +77,11 @@ M.block_xatbot = {
     		data: dataParts.join('\r\n'),
     		contentType: "multipart/form-data; boundary=" + boundary,
             success: function(data) {
-    			isReceiving = 2;
+    			self.isReceiving = 2;
     			self.newRecievedMessage(data);
     		},
             error: function(error) {
-    			isReceiving = 2;
+    			self.isReceiving = 2;
     			self.newRecievedMessage(error);
     		}
         });
@@ -130,16 +130,28 @@ M.block_xatbot = {
 
     createButton : function(actions) {
         var self = this;
-        $('.m_xat-logs').append($('<div/>', {'class': 'm_xat m_xat-bot'}));
+        $('.m_xat-logs').append($('<div/>', {'class': 'm_xat m_xat-self'}).append(
+            $('<div/>', {'class': 'm_xat-buttonContainer'})
+        ));
         for (i = 0; i < actions.length; i++) {
-            $('.m_xat-logs>.m_xat.m_xat-bot:last-child').append(
+            $('.m_xat-logs>.m_xat.m_xat-self:last-child>.m_xat-buttonContainer').append(
                 $('<div/>', {'class': 'm_xat-button', 'text': actions[i].name})
             );
-            $('.m_xat-logs>.m_xat.m_xat-bot>.m_xat-button:last-child')
-                .on('click', {message: actions[i].value}, function(event){
-                    self.send(event.data.message, true);
-            });
+            $('.m_xat-logs>.m_xat.m_xat-self:last-child .m_xat-button:last-child')
+                .on('click', {message: actions[i].value, text: actions[i].name}, self.buttonClick);
         }
+        this.isReceiving = 3;
+    },
+
+    buttonClick : function (event) {
+        var self = M.block_xatbot;
+        $('.m_xat-logs>.m_xat.m_xat-self:last-child').remove();
+        $('.m_xat-logs').append(
+            $('<div/>', {'class': 'm_xat m_xat-self'}).append(
+                $('<p/>', {'class': 'm_xat-message', 'text': event.data.text})
+            )
+        );
+        self.send(event.data.message, true);
     },
 
     createAttachment : function(messages) {
@@ -171,11 +183,11 @@ M.block_xatbot = {
     },
 
     checkVisibility : function(message) {
+        var self = M.block_xatbot;
     	// Scroll the view down a certain amount
     	$('.m_xat-logs').stop().animate({scrollTop: $('.m_xat-logs')[0].scrollHeight});
-
-    	if (isReceiving === 2)
-    		isReceiving = 0;
+    	if (this.isReceiving === 2)
+    		this.isReceiving = 0;
     }
 
 };

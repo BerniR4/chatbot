@@ -17,7 +17,8 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 
 include 'prova.php';
-include __DIR__ . '/functionalities/resource_listener.php';
+include __DIR__ . '/functionalities/single_req/resource_listener.php';
+include __DIR__ . '/functionalities/conversation/resource_listener_conver.php';
 
 $config = [
 	// Your driver-specific configuration
@@ -71,21 +72,24 @@ $botman->hears('Prova', function($bot) {
 	$bot->startConversation(new Prova\MyBotCommands);
 });//'Prova\MyBotCommands@handle');
 
+$botman->hears('call me {name}(| the {adjective})', function ($bot, $name, $o1, $adjective) {
+    $bot->reply('Hello '.$name.'. You truly are '.$adjective);
+});
+
 
 
 
 //Començament de les funcionalitats reals (AQUEST COMENTARI S'HAURÀ DE BORRAR)
-
-$botman->hears(get_string('hearingresourcesearch', 'block_xatbot'), 'resource_listener::handle_resource_request');
+$botman->hears(get_string('hearingresourcerequest', 'block_xatbot'), 'resource_listener::handle_resource_request');
 //$botman->hears('Recurs ([a-zA-Z ]*)(|, course ([a-zA-Z ]*))(|, alumn ([a-zA-Z ]*))', 'Xatbot\resource_listener::handle_resource_request');
+
+$botman->hears(get_string('hearingresourceconver', 'block_xatbot'), function($bot) {
+	$bot->startConversation(new resource_listener_conver);
+});
 
 //function ($bot, $resourceName, $o1, $curs, $o2, $alumn){
 //	$bot->reply('recurs: ' . $resourceName . ' course: ' . $curs . ' alumn: ' . $alumn);
 //});
-
-$botman->hears('call me {name}(| the {adjective})', function ($bot, $name, $o1, $adjective) {
-    $bot->reply('Hello '.$name.'. You truly are '.$adjective);
-});
 
 $botman->fallback(function($bot) {
 	$bot->reply('No entenc què dius');

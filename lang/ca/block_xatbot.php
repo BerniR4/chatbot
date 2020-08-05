@@ -12,9 +12,13 @@ $string['fullwelcome2'] = 'Per a cercar un recurs, utilitza la paraula clau "Rec
         seguit d\'allò que vulguis cercar. Per exemple: "Recurs prova"';
 $string['fullresourcematch'] = 'Del tipus "{$a}", s\'han trobat les següents coincidencies:';
 $string['fullnoresourcematch'] = 'No s\'han trobat coincidencies';
+$string['fullaskresourcetype'] = 'Quin tipus de recurs vols?';
 
 //Components de missatges estàtics
 $string['compresourcematchcourse'] = ' - Curs: ';
 
-//Missatges a escoltar
-$string['hearingresourcesearch'] = 'Recurs ([a-zA-Z ]*)';
+//Peticions úniques a escoltar
+$string['hearingresourcerequest'] = 'Recurs ([a-zA-Z ]*)';
+
+//Conversacions a escoltar
+$string['hearingresourceconver'] = '.*Recurs';

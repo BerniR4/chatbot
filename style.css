@@ -108,13 +108,10 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-
 #m_xat-inputDiv {
     width: 75%;
     margin-right: 15px;
-
 }
-
 
 .m_xat-form textarea {
     padding: 5px 5px 5px 15px;
@@ -131,7 +128,6 @@
     overflow:hidden;
     box-shadow: none;
     outline: none;
-
 }
 
 .m_xat-form textarea:focus {
@@ -151,28 +147,13 @@
     border-radius: 20px;
 }
 
-.m_xat-buttonResponse {
-    color: white;
-    max-width: 80%;
-    width: fit-content;
-    margin: 5px 0 5px auto;
-    border-radius: 20px 20px 0px 20px;
-    background: rgb(64, 172, 246);
-    overflow-wrap: break-word;
-    font-size: 18px;
-    padding: 10px;
-    margin: 20px 5px;
-    float: left;
-}
-
 .m_xat-buttonResponse:hover{
-        background: rgb(100, 200, 255);
+    background: rgb(100, 200, 255);
 }
 
 #m_xat-switchInputType{
     max-width: 40px;
     max-height: 40px;
-
 }
 
 #m_xat-rec {
@@ -183,5 +164,31 @@
 #m_xat-buttonDiv {
     margin: 0 auto;
     width: inherit;
+}
 
+.m_xat-button {
+    color: rgb(64, 172, 246);
+    width: auto;
+    margin: 5px 0 5px 5px;
+    border-radius: 20px;
+    background: white;
+    overflow-wrap: break-word;
+    padding: 10px;
+    border: rgb(64, 172, 246);
+    border-style: solid;
+    flex: 1 1 0px;
+    text-align: center;
+}
+
+.m_xat-button:hover {
+    cursor: pointer;
+    background: rgb(64, 172, 246);
+    color: white;
+}
+
+.m_xat-buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding-left: 20%;
 }
