@@ -14,11 +14,14 @@ use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use App\Http\Controllers\BotManController;
 use BotMan\BotMan\Cache\SymfonyCache;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-
+//use BotMan\BotMan\Commands\Command;
 
 include 'prova.php';
 include __DIR__ . '/functionalities/single_req/resource_listener.php';
 include __DIR__ . '/functionalities/conversation/resource_listener_conver.php';
+include __DIR__ . '/middleware/received/resource_received_middleware.php';
+include __DIR__ . '/middleware/heard/resource_heard_middleware.php';
+include __DIR__ . '/middleware/matching/resource_matching_middleware.php';
 
 $config = [
 	// Your driver-specific configuration
@@ -72,10 +75,15 @@ $botman->hears('Prova', function($bot) {
 	$bot->startConversation(new Prova\MyBotCommands);
 });//'Prova\MyBotCommands@handle');
 
-$botman->hears('call me {name}(| the {adjective})', function ($bot, $name, $o1, $adjective) {
+$botman->hears('call me ([^\s]+)( the ([^\s]+))?( with ([^\s]+) size)?', function ($bot, $name, $adjective, $friki) {
     $bot->reply('Hello '.$name.'. You truly are '.$adjective);
 });
 
+$botman->hears('Prova2', function($bot) {
+	$bot->reply('Hello You truly are' . var_dump($bot->getMessage()));
+})->middleware(new resource_matching_middleware());
+
+//$botman->say('holaaa', $userId);
 
 
 
