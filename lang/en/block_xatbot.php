@@ -13,6 +13,9 @@ $string['fullwelcome2'] = 'To search for a resource, use the keyword "Resource",
 $string['fullresourcematch'] = 'Of type "{$a}", the following matches have been found:';
 $string['fullnoresourcematch'] = 'No matches have been found';
 $string['fullaskresourcetype'] = 'What type of resource do you want?';
+$string['fullaskresourcecourse'] = 'Of which course?';
+
+$string['buttonall'] = 'Tots';
 
 //Static message components
 $string['compresourcematchcourse'] = ' - Course: ';

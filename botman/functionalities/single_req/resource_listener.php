@@ -1,6 +1,5 @@
 <?php
 
-
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
@@ -22,6 +21,7 @@ class resource_listener {
 
     function search_resource_files($bot, $resourcename) {
         global $DB, $CFG, $USER;
+        $prova = 'resource';
         $rs = $DB->get_records_sql('SELECT r.id AS rid, r.name, c.id AS cid, r.revision, f.filename, cm.course, 
                 cm.visible, course.fullname FROM {resource} AS r, {context} AS c, {course_modules} AS cm, {files} AS f,
                 {course} AS course WHERE cm.deletioninprogress = 0 AND cm.module = 17 AND r.id = cm.instance 

@@ -13,6 +13,9 @@ $string['fullwelcome2'] = 'Per a cercar un recurs, utilitza la paraula clau "Rec
 $string['fullresourcematch'] = 'Del tipus "{$a}", s\'han trobat les següents coincidencies:';
 $string['fullnoresourcematch'] = 'No s\'han trobat coincidencies';
 $string['fullaskresourcetype'] = 'Quin tipus de recurs vols?';
+$string['fullaskresourcecourse'] = 'De quin curs?';
+
+$string['buttonall'] = 'Tots';
 
 //Components de missatges estàtics
 $string['compresourcematchcourse'] = ' - Curs: ';

@@ -14,13 +14,11 @@ use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use App\Http\Controllers\BotManController;
 use BotMan\BotMan\Cache\SymfonyCache;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-//use BotMan\BotMan\Commands\Command;
+use BotMan\BotMan\Commands\Command;
 
 include 'prova.php';
 include __DIR__ . '/functionalities/single_req/resource_listener.php';
 include __DIR__ . '/functionalities/conversation/resource_listener_conver.php';
-include __DIR__ . '/middleware/received/resource_received_middleware.php';
-include __DIR__ . '/middleware/heard/resource_heard_middleware.php';
 include __DIR__ . '/middleware/matching/resource_matching_middleware.php';
 
 $config = [
@@ -36,12 +34,7 @@ DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
 // Create an instance
 $adapter = new FilesystemAdapter();
 $botman = BotManFactory::create($config, new SymfonyCache($adapter));
-
-// Give the bot something to listen for.
-$botman->hears('Hello', function ($bot) {
-	$bot->reply(get_string('fullwelcome1', 'block_xatbot'));
-	$bot->reply(get_string('fullwelcome2', 'block_xatbot'));
-});
+//$botman = BotManFactory::create($config);
 
 $botman->hears('Attachment .*', function ($bot) {
 	$attachment = new File('..\/blocks\/xatbot\/block_xatbot.php', [
@@ -79,15 +72,18 @@ $botman->hears('call me ([^\s]+)( the ([^\s]+))?( with ([^\s]+) size)?', functio
     $bot->reply('Hello '.$name.'. You truly are '.$adjective);
 });
 
-$botman->hears('Prova2', function($bot) {
+$botman->hears('Prova2 {nametest}', function($bot, $nametest) {
 	$bot->reply('Hello You truly are' . var_dump($bot->getMessage()));
 })->middleware(new resource_matching_middleware());
 
-//$botman->say('holaaa', $userId);
+////////////////////////////////////////////////////////////////////////////////
 
+//Welcome message 
+$botman->hears('Hello', function ($bot) {
+	$bot->reply(get_string('fullwelcome1', 'block_xatbot'));
+	$bot->reply(get_string('fullwelcome2', 'block_xatbot'));
+})->stopsConversation();
 
-
-//Començament de les funcionalitats reals (AQUEST COMENTARI S'HAURÀ DE BORRAR)
 $botman->hears(get_string('hearingresourcerequest', 'block_xatbot'), 'resource_listener::handle_resource_request');
 //$botman->hears('Recurs ([a-zA-Z ]*)(|, course ([a-zA-Z ]*))(|, alumn ([a-zA-Z ]*))', 'Xatbot\resource_listener::handle_resource_request');
 

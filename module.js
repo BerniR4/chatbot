@@ -7,7 +7,9 @@ M.block_xatbot = {
     /**
      * Initiates the connection with botman and adds events listeners
      */
-    init : function(Y) {
+    init : function(Y, userId) {
+        this.userId = userId;
+
         var self = this;
         //Add listeners
         $('textarea.m_xat-input').on('keypress', this.manageKeyPress);
@@ -63,7 +65,10 @@ M.block_xatbot = {
     	var dataParts = [];
     	dataParts.push("--" + boundary,
     		'Content-Disposition:form-data; name="driver"',
-    		'', 'web',
+            '', 'web',
+            '--' + boundary,
+    		'Content-Disposition:form-data; name="userId"',
+            '', this.userId,
     		'--' + boundary,
     		'Content-Disposition:form-data; name="message"',
             '', message,
@@ -140,7 +145,7 @@ M.block_xatbot = {
             $('.m_xat-logs>.m_xat.m_xat-self:last-child .m_xat-button:last-child')
                 .on('click', {message: actions[i].value, text: actions[i].name}, self.buttonClick);
         }
-        this.isReceiving = 3;
+        //this.isReceiving = 3;
     },
 
     buttonClick : function (event) {
