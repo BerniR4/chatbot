@@ -21,14 +21,16 @@ class resource_listener {
 
     function search_resource_files($bot, $resourcename) {
         global $DB, $CFG, $USER;
-        $prova = 'resource';
+        //$start = microtime(true);
+
         $rs = $DB->get_records_sql('SELECT r.id AS rid, r.name, c.id AS cid, r.revision, f.filename, cm.course, 
                 cm.visible, course.fullname FROM {resource} AS r, {context} AS c, {course_modules} AS cm, {files} AS f,
-                {course} AS course WHERE cm.deletioninprogress = 0 AND cm.module = 17 AND r.id = cm.instance 
-                AND c.instanceid = cm.id AND cm.course = course.id
+                {course} AS course WHERE cm.deletioninprogress = 0 AND cm.module = :modulename 
+                AND r.id = cm.instance AND c.instanceid = cm.id AND cm.course = course.id
                 AND f.filename <> "." AND f.contextid = c.id AND c.contextlevel = :contextlevel 
                 AND UPPER(r.name) LIKE CONCAT("%", UPPER(:resourcename), "%");',
-            ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename]);
+            ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename, 
+            'modulename' => $DB->get_record('modules', ['name' => 'resource'])->id]);
         
         if (!$rs) {
             return false;
@@ -37,8 +39,8 @@ class resource_listener {
         $bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_resource')));
 
         foreach ($rs as $record) {
-            if (($record->visible || has_capability('moodle/course:viewhiddenactivities', 
-                    context_course::instance($record->course))) 
+            if (($record->visible 
+                    || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
                     && is_enrolled(context_course::instance($record->course), $USER->id)) {
                 $attachment = new File($CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
                     . $record->revision . '/' . $record->filename, [
@@ -57,14 +59,19 @@ class resource_listener {
                 $bot->reply($message);
             }
         }
+        //$time_elapsed_secs = microtime(true) - $start;
+        //$bot->reply('Temps: ' . $time_elapsed_secs);
         return true;
     }
 
     function search_resource_url($bot, $resourcename) {
         global $DB, $CFG, $USER;
-        $rs = $DB->get_records_sql('SELECT u.name, u.externalurl, c.id AS course, c.fullname FROM {url} AS u, 
-                {course} AS c WHERE c.id = u.course AND UPPER(u.name) LIKE CONCAT("%", UPPER(:resourcename), "%");',
-            ['resourcename' => $resourcename]);
+        $rs = $DB->get_records_sql('SELECT u.name, u.externalurl, cm.course, cm.visible, course.fullname 
+                FROM {url} AS u, {context} AS c, {course_modules} AS cm, {course} AS course 
+                WHERE course.id = u.course AND c.instanceid = cm.id AND cm.module = 20 AND cm.deletioninprogress = 0 
+                AND u.id = cm.instance AND c.contextlevel = :contextlevel
+                AND UPPER(u.name) LIKE CONCAT("%", UPPER(:resourcename), "%");',
+            ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename]);
         
         if (!$rs) {
             return false;
@@ -73,7 +80,8 @@ class resource_listener {
         $bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
 
         foreach ($rs as $record) {
-            if (has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course)) 
+            if (($record->visible 
+                    || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
                     && is_enrolled(context_course::instance($record->course), $USER->id)) {
                 $attachment = new File($record->externalurl, [
                     'custom_payload' => true,

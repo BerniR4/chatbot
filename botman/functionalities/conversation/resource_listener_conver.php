@@ -1,19 +1,40 @@
 <?php
 
-require_once 'vendor/autoload.php';
-
 use BotMan\BotMan\Messages\Conversations\Conversation;
 use BotMan\BotMan\Messages\Outgoing\Question;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Incoming\Answer;
+use BotMan\BotMan\Messages\Attachments\File;
+use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
+
+include_once __DIR__ . '/../dbhelpers/resource_dbhelper.php';
 
 class resource_listener_conver extends Conversation {
 	
+	/** @var string */
+	protected $name;
+
 	/** @var string */
 	protected $type;
 
 	/** @var string */
 	protected $course;
+
+	public function ask_name() {
+		$question = Question::create('name')
+        ->addButtons([
+			Button::create(get_string('buttonall', 'block_xatbot'))->value(get_string('buttonall', 'block_xatbot'))
+		]);
+
+		$this->ask($question, function (Answer $answer) {
+			$this->name = null;
+			if (strcasecmp($answer->getText(), get_string('buttonall', 'block_xatbot')) != 0) {
+				$this->name = $answer->getText(); 
+			}
+
+			$this->ask_type();
+		});
+	}
 
 	public function ask_type() {
 		
@@ -26,9 +47,9 @@ class resource_listener_conver extends Conversation {
 
 		$this->ask($question, function (Answer $answer) {
 			$this->type = null;
-			if (strcasecmp($answer->getValue(), get_string('pluginname', 'mod_resource')) == 0) {
+			if (strcasecmp($answer->getText(), get_string('pluginname', 'mod_resource')) == 0) {
 				$this->type = 'resource';
-			} elseif (strcasecmp($answer->getValue(), get_string('pluginname', 'mod_url')) == 0) {
+			} elseif (strcasecmp($answer->getText(), get_string('pluginname', 'mod_url')) == 0) {
 				$this->type = 'url';
 			}
 
@@ -43,16 +64,91 @@ class resource_listener_conver extends Conversation {
 		]);
 		
 		$this->ask($question, function (Answer $answer) {
-			if (!strcasecmp($answer->getValue(), get_string('buttonall', 'block_xatbot'))) {
-				$this->course = $answer->getValue(); 
+			$this->course = null;
+			if (strcasecmp($answer->getText(), get_string('buttonall', 'block_xatbot')) != 0) {
+				$this->course = $answer->getText(); 
 			}
-			$this->say('ha tirat????' . $this->course. $this->type);
-
+			$this->manage_reply();
 		});
 	}
 
+	public function manage_reply() {
+		$rs_res = null;
+		$rs_url = null;
+
+		switch ($this->type) {
+			case 'resource':
+				$rs_res = resource_dbhelper::search_resource_files($this->name, $this->course);
+				break;
+			
+			case 'url':
+				$rs_url = resource_dbhelper::search_resource_url($this->name, $this->course);
+				break;
+			
+			default:
+				$rs_res = resource_dbhelper::search_resource_files($this->name, $this->course);
+				$rs_url = resource_dbhelper::search_resource_url($this->name, $this->course);
+		}
+
+		if ($rs_res != null) {
+			$this->say(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_resource')));
+			$this->create_messages($rs_res, 'res');
+		}
+
+		if ($rs_url != null) {
+			$this->say(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
+			$this->create_messages($rs_url, 'url');
+		}
+
+		if ($rs_url == null && $rs_res == null) {
+			$this->say(get_string('fullnoresourcematch', 'block_xatbot'));
+		}
+
+	}
+
+	public function create_messages($rs, $type) {
+		global $CFG, $USER;
+		foreach ($rs as $record) {
+            if (($record->visible 
+                    || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
+                    && is_enrolled(context_course::instance($record->course), $USER->id)) {
+				
+				//Send Resource name with link
+				$url = '';
+				switch ($type) {
+					case 'res': 
+						$url = $CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
+							. $record->revision . '/' . $record->filename;
+						break;
+
+					case 'url':
+						$url = $record->externalurl;
+						break;
+
+				}
+				$attachment = new File($url, [
+					'custom_payload' => true,
+				]);
+                $message = OutgoingMessage::create($record->name)
+                    ->withAttachment($attachment);
+				$this->say($message);
+				
+				//Send ' - course: ' separator
+				$this->say(get_string('compresourcematchcourse', 'block_xatbot'));
+
+				//Send Course name with link
+				$attachment = new File($CFG->wwwroot . '/course/view.php?id=' . $record->course, [
+                    'custom_payload' => true,
+                ]);
+                $message = OutgoingMessage::create($record->fullname)
+                    ->withAttachment($attachment);
+                $this->say($message);
+            }
+        }
+	}
+
 	public function run() {
-		$this->ask_type();
+		$this->ask_name();
 	}
 
 }

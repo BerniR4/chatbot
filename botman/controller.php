@@ -1,8 +1,6 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once __DIR__ . '/../../../config.php' ;
-//require_once __DIR__ . '/../../../lib/moodlelib.php';
 
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
@@ -21,12 +19,7 @@ include __DIR__ . '/functionalities/single_req/resource_listener.php';
 include __DIR__ . '/functionalities/conversation/resource_listener_conver.php';
 include __DIR__ . '/middleware/matching/resource_matching_middleware.php';
 
-$config = [
-	// Your driver-specific configuration
-	// "telegram" => [
-	//    "token" => "TOKEN"
-	// ]
-];
+$config = [];
 
 // Load the driver(s) you want to use
 DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
