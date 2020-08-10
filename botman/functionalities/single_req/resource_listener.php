@@ -65,7 +65,7 @@ class resource_listener {
     }
 
     function search_resource_url($bot, $resourcename) {
-        global $DB, $CFG, $USER;
+        global $DB, $CFG, $USER, $PAGE;
         $rs = $DB->get_records_sql('SELECT u.name, u.externalurl, cm.course, cm.visible, course.fullname 
                 FROM {url} AS u, {context} AS c, {course_modules} AS cm, {course} AS course 
                 WHERE course.id = u.course AND c.instanceid = cm.id AND cm.module = 20 AND cm.deletioninprogress = 0 
@@ -99,6 +99,12 @@ class resource_listener {
                 $bot->reply($message);
             }
         }
+
+        $event = \block_xatbot\event\resource_searched::create(array(
+            'context' => context::instance_by_id($_GET['context']), 
+        ));
+        $event->trigger();
+        
         return true;
     }
 }

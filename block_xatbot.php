@@ -13,6 +13,8 @@ class block_xatbot extends block_base {
 			return $this->content;
 		}
 
+		//echo(var_dump($this));
+
 		$this->content->text = $this->get_http();
 		$this->content->footer 	= '';
 		$this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/xatbot/style.css'));
@@ -24,22 +26,24 @@ class block_xatbot extends block_base {
 			'requires' => array(),
 			'strings' => array()
 		);
-		$this->page->requires->js_init_call('M.block_xatbot.init', array($this->uuidv4()), false, $jsmodule);
+		$this->page->requires->js_init_call('M.block_xatbot.init', array($this->uuidv4(), $this->page->context->id), 
+			false, $jsmodule);
 		return $this->content;
 	}
 
 	private function get_http() {
+		global $CFG;
 		return 	'<!DOCTYPE html>'
 			.'<html>'
 				.'<div class="m_xat-body">'
 					.'<div class="m_xat-headerBar">'
-						.'<div class="m_xat-user-photo"><img src="../blocks/xatbot/images/bot_img.jpg"></div>'
+						.'<div class="m_xat-user-photo"><img src="' . $CFG->wwwroot . '/blocks/xatbot/images/bot_img.jpg"></div>'
 						.'<p class="m_xat-title">LSBot</p>'
 					.'</div>'
 					.'<div class="m_xat-box">'
 						.'<div class="m_xat-logs">'
 							.'<div class="m_xat m_xat-bot" id="m_xat-loadingGif" style="display: none;">'
-								.'<div class="m_xat-gif"><img src="../blocks/xatbot/images/loading.gif"></div>'
+								.'<div class="m_xat-gif"><img src="' . $CFG->wwwroot . '/blocks/xatbot/images/loading.gif"></div>'
 							.'</div>'
 						.'</div>'
 					.'</div>'
@@ -49,7 +53,7 @@ class block_xatbot extends block_base {
 							.'<textarea class="m_xat-input" placeholder="Escriu un missatge..." rows="1" data-min-rows="1"></textarea>'
 						.'</div>'
 						.'<div id="m_xat-form-buttons">'
-							.'<input width="40" height="40" type ="image" id="m_xat-rec" src="../blocks/xatbot/images/send.png">'
+							.'<input width="40" height="40" type ="image" id="m_xat-rec" src="' . $CFG->wwwroot . '/blocks/xatbot/images/send.png">'
 						.'</div>'
 					.'</div>'
 
@@ -65,6 +69,12 @@ class block_xatbot extends block_base {
 			bin2hex(chr((ord(random_bytes(1)) & 0x3F) | 0x80)) . bin2hex(random_bytes(1)),
 			bin2hex(random_bytes(6))
     	]);
+	}
+
+	function applicable_formats() {
+		return array(
+			'all' => true, 
+		);
 	}
 
 /*

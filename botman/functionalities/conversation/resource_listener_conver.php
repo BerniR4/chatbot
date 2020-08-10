@@ -104,6 +104,12 @@ class resource_listener_conver extends Conversation {
 			$this->say(get_string('fullnoresourcematch', 'block_xatbot'));
 		}
 
+		global $PAGE;
+        $event = \block_xatbot\event\resource_searched::create(array(
+			'context' => context::instance_by_id($_GET['context']), 
+        ));
+        $event->trigger();
+
 	}
 
 	public function create_messages($rs, $type) {

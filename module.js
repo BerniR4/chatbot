@@ -1,14 +1,15 @@
 M.block_xatbot = {
     DEFAULT_TIME_DELAY : 1000,
-    URL : '../blocks/xatbot/botman/controller.php',
+    URL : M.cfg.wwwroot + '/blocks/xatbot/botman/controller.php?context=',
     name : 'block_xatbot',
     isReceiving : 2,
 
     /**
      * Initiates the connection with botman and adds events listeners
      */
-    init : function(Y, userId) {
+    init : function(Y, userId, contexttId) {
         this.userId = userId;
+        this.URL = this.URL + contexttId;
 
         var self = this;
         //Add listeners
@@ -39,6 +40,9 @@ M.block_xatbot = {
         if (self.isReceiving === 0 && input.value !== "") {
             //Call the method for sending a message, pass in the text from the user
             self.isReceiving = 1;
+
+            //Delete the buttons if any
+            $('.m_xat-logs>.m_xat.m_xat-self:last-child').remove();
             // Create a div with the text that the user typed in
             $('.m_xat-logs').append(
                 $('<div/>', {'class': 'm_xat m_xat-self'}).append(

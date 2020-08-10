@@ -48,13 +48,13 @@ $botman->hears('User.*', function ($bot) {
 });
 
 $botman->hears('Event.*', function ($bot) {
-	global $PAGE;
+	global $PAGE, $USER;
 	$event = \block_xatbot\event\xatbot_viewed::create(array(
-		'context' => $PAGE->context, 
+		'context' => context::instance_by_id($_GET['context']), 
 	));
 	$event->trigger();
 	$user = $bot->getUser();
-	$bot->reply('UserID = '. $user->getId());
+	$bot->reply('UserID = '. $_GET['context']);
 });
 
 $botman->hears('Prova', function($bot) {

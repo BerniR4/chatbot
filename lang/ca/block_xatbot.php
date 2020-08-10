@@ -14,7 +14,6 @@ $string['fullresourcematch'] = 'Del tipus "{$a}", s\'han trobat les següents co
 $string['fullnoresourcematch'] = 'No s\'han trobat coincidencies';
 $string['fullaskresourcetype'] = 'Quin tipus de recurs vols?';
 $string['fullaskresourcecourse'] = 'De quin curs?';
-
 $string['buttonall'] = 'Tots';
 
 //Components de missatges estàtics
@@ -25,3 +24,6 @@ $string['hearingresourcerequest'] = 'Recurs ([a-zA-Z ]*)';
 
 //Conversacions a escoltar
 $string['hearingresourceconver'] = '.*Recurs';
+
+//Esdeveniments
+$string['resourcesearchevent'] = 'S\'ha cercat recurs';

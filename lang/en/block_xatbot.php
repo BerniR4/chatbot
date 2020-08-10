@@ -25,3 +25,6 @@ $string['hearingresourcerequest'] = 'Resource ([a-zA-Z ]*)';
 
 //Hearing conversations
 $string['hearingresourceconver'] = '.*Resource';
+
+//Events
+$string['resourcesearchevent'] = 'S\'ha cercat recurs';
