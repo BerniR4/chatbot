@@ -10,21 +10,24 @@ class resource_dbhelper {
         $select = 'SELECT r.id AS rid, r.name, c.id AS cid, r.revision, f.filename, cm.course, cm.visible, course.fullname ';
         $from = 'FROM {resource} AS r, {context} AS c, {course_modules} AS cm, {files} AS f,
             {course} AS course ';
-        $where = 'WHERE cm.deletioninprogress = 0 AND cm.module = ' . $moduleid . ' AND r.id = cm.instance 
+        $where = 'WHERE cm.deletioninprogress = 0 AND cm.module = :moduleid AND r.id = cm.instance 
             AND c.instanceid = cm.id AND cm.course = course.id
-            AND f.filename <> "." AND f.contextid = c.id AND c.contextlevel = ' . CONTEXT_MODULE;
+            AND f.filename <> "." AND f.contextid = c.id AND c.contextlevel = :contextlevel';
 
         if ($resourcename != null) {
-            $where = $where . ' AND UPPER(r.name) LIKE CONCAT("%", UPPER("' . $resourcename . '"), "%")';
+            $where = $where . ' AND UPPER(r.name) LIKE CONCAT("%", UPPER(:resourcename), "%")';
         }
 
         if ($course != null) {
-            $where = $where . ' AND UPPER(course.fullname) LIKE CONCAT("%", UPPER("' . $course . '"), "%")';
+            $where = $where . ' AND UPPER(course.fullname) LIKE CONCAT("%", UPPER(:coursename), "%")';
         }
 
         $where = $where . ';';
 
-        $rs = $DB->get_records_sql($select . $from . $where);
+        $query = $select . $from . $where;
+
+        $rs = $DB->get_records_sql($query, ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename, 
+        'moduleid' => $DB->get_record('modules', ['name' => 'resource'])->id, 'coursename' => $course]);
         
         return $rs;
     }

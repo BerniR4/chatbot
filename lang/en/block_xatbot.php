@@ -12,6 +12,7 @@ $string['fullwelcome2'] = 'To search for a resource, use the keyword "Resource",
         to search for. For example: "Resource test"';
 $string['fullresourcematch'] = 'Of type "{$a}", the following matches have been found:';
 $string['fullnoresourcematch'] = 'No matches have been found';
+$string['fullaskresourcename'] = 'What is the name of the resource?';
 $string['fullaskresourcetype'] = 'What type of resource do you want?';
 $string['fullaskresourcecourse'] = 'Of which course?';
 

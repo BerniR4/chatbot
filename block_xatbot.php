@@ -13,8 +13,6 @@ class block_xatbot extends block_base {
 			return $this->content;
 		}
 
-		//echo(var_dump($this));
-
 		$this->content->text = $this->get_http();
 		$this->content->footer 	= '';
 		$this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/xatbot/style.css'));

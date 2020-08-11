@@ -21,7 +21,7 @@ class resource_listener_conver extends Conversation {
 	protected $course;
 
 	public function ask_name() {
-		$question = Question::create('name')
+		$question = Question::create(get_string('fullaskresourcename', 'block_xatbot'))
         ->addButtons([
 			Button::create(get_string('buttonall', 'block_xatbot'))->value(get_string('buttonall', 'block_xatbot'))
 		]);
@@ -104,10 +104,20 @@ class resource_listener_conver extends Conversation {
 			$this->say(get_string('fullnoresourcematch', 'block_xatbot'));
 		}
 
-		global $PAGE;
-        $event = \block_xatbot\event\resource_searched::create(array(
-			'context' => context::instance_by_id($_GET['context']), 
-        ));
+        global $PAGE;
+        $context = context::instance_by_id($_GET['context']);
+        if ($context->get_course_context(false) 
+                && (is_viewing(context::instance_by_id($_GET['context'])) 
+                || is_enrolled(context::instance_by_id($_GET['context'])))) {
+            $event = \block_xatbot\event\resource_searched::create(array(
+                'context' => context::instance_by_id($_GET['context']), 
+            ));
+        } else {
+            $event = \block_xatbot\event\resource_searched::create(array(
+                'context' => $PAGE->context, 
+            ));
+        }
+
         $event->trigger();
 
 	}
@@ -117,7 +127,7 @@ class resource_listener_conver extends Conversation {
 		foreach ($rs as $record) {
             if (($record->visible 
                     || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
-                    && is_enrolled(context_course::instance($record->course), $USER->id)) {
+                    && is_viewing(context_course::instance($record->course), $USER->id)) {
 				
 				//Send Resource name with link
 				$url = '';

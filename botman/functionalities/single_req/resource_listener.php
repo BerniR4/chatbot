@@ -17,13 +17,30 @@ class resource_listener {
         if (!$file_search && !$url_search) {
             $bot->reply(get_string('fullnoresourcematch', 'block_xatbot'));
         }
+
+        global $PAGE;
+        $context = context::instance_by_id($_GET['context']);
+        if ($context->get_course_context(false) 
+                && (is_viewing(context::instance_by_id($_GET['context'])) 
+                || is_enrolled(context::instance_by_id($_GET['context'])))) {
+            $event = \block_xatbot\event\resource_searched::create(array(
+            'context' => context::instance_by_id($_GET['context']), 
+            ));
+        } else {
+            $event = \block_xatbot\event\resource_searched::create(array(
+                'context' => $PAGE->context, 
+            ));
+        }
+
+        $event->trigger();
+
     }
 
     function search_resource_files($bot, $resourcename) {
         global $DB, $CFG, $USER;
-        //$start = microtime(true);
+        $start = microtime(true);
 
-        $rs = $DB->get_records_sql('SELECT r.id AS rid, r.name, c.id AS cid, r.revision, f.filename, cm.course, 
+        $rs = $DB->get_recordset_sql('SELECT r.id AS rid, r.name, c.id AS cid, r.revision, f.filename, cm.course, 
                 cm.visible, course.fullname FROM {resource} AS r, {context} AS c, {course_modules} AS cm, {files} AS f,
                 {course} AS course WHERE cm.deletioninprogress = 0 AND cm.module = :modulename 
                 AND r.id = cm.instance AND c.instanceid = cm.id AND cm.course = course.id
@@ -41,7 +58,8 @@ class resource_listener {
         foreach ($rs as $record) {
             if (($record->visible 
                     || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
-                    && is_enrolled(context_course::instance($record->course), $USER->id)) {
+                    && (is_enrolled(context_course::instance($record->course))) 
+                    || (is_viewing(context_course::instance($record->course)))) {
                 $attachment = new File($CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
                     . $record->revision . '/' . $record->filename, [
                     'custom_payload' => true,
@@ -59,14 +77,14 @@ class resource_listener {
                 $bot->reply($message);
             }
         }
-        //$time_elapsed_secs = microtime(true) - $start;
-        //$bot->reply('Temps: ' . $time_elapsed_secs);
+        $time_elapsed_secs = microtime(true) - $start;
+        $bot->reply('Temps: ' . $time_elapsed_secs);
         return true;
     }
 
     function search_resource_url($bot, $resourcename) {
         global $DB, $CFG, $USER, $PAGE;
-        $rs = $DB->get_records_sql('SELECT u.name, u.externalurl, cm.course, cm.visible, course.fullname 
+        $rs = $DB->get_recordset_sql('SELECT u.name, u.externalurl, cm.course, cm.visible, course.fullname 
                 FROM {url} AS u, {context} AS c, {course_modules} AS cm, {course} AS course 
                 WHERE course.id = u.course AND c.instanceid = cm.id AND cm.module = 20 AND cm.deletioninprogress = 0 
                 AND u.id = cm.instance AND c.contextlevel = :contextlevel
@@ -82,7 +100,8 @@ class resource_listener {
         foreach ($rs as $record) {
             if (($record->visible 
                     || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
-                    && is_enrolled(context_course::instance($record->course), $USER->id)) {
+                    && (is_enrolled(context_course::instance($record->course))) 
+                    || (is_viewing(context_course::instance($record->course)))) {
                 $attachment = new File($record->externalurl, [
                     'custom_payload' => true,
                 ]);
@@ -100,11 +119,6 @@ class resource_listener {
             }
         }
 
-        $event = \block_xatbot\event\resource_searched::create(array(
-            'context' => context::instance_by_id($_GET['context']), 
-        ));
-        $event->trigger();
-        
         return true;
     }
 }
