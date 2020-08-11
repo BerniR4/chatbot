@@ -10,6 +10,10 @@ use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 include_once __DIR__ . '/../dbhelpers/resource_dbhelper.php';
 
 class resource_listener_conver extends Conversation {
+
+	const TYPE_RESOURCE = 1;
+	const TYPE_URL = 2;
+	const TYPE_ASSIGN = 3;
 	
 	/** @var string */
 	protected $name;
@@ -75,6 +79,7 @@ class resource_listener_conver extends Conversation {
 	public function manage_reply() {
 		$rs_res = null;
 		$rs_url = null;
+		$rs_asg = null;
 
 		switch ($this->type) {
 			case 'resource':
@@ -88,19 +93,26 @@ class resource_listener_conver extends Conversation {
 			default:
 				$rs_res = resource_dbhelper::search_resource_files($this->name, $this->course);
 				$rs_url = resource_dbhelper::search_resource_url($this->name, $this->course);
+				$rs_asg = resource_dbhelper::search_resource_assign($this->name, $this->course);
+
 		}
 
-		if ($rs_res != null) {
+		if ($rs_res->valid()) {
 			$this->say(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_resource')));
-			$this->create_messages($rs_res, 'res');
+			$this->create_messages($rs_res, TYPE_RESOURCE);
 		}
 
-		if ($rs_url != null) {
+		if ($rs_url->valid()) {
 			$this->say(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
-			$this->create_messages($rs_url, 'url');
+			$this->create_messages($rs_url, TYPE_URL);
+		}
+		
+		if ($rs_asg->valid()) {
+			$this->say(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_assign')));
+			$this->create_messages($rs_asg, TYPE_ASSIGN);
 		}
 
-		if ($rs_url == null && $rs_res == null) {
+		if (!$rs_res->valid() && !$rs_url->valid() && !$rs_asg->valid()) {
 			$this->say(get_string('fullnoresourcematch', 'block_xatbot'));
 		}
 
@@ -124,21 +136,25 @@ class resource_listener_conver extends Conversation {
 
 	public function create_messages($rs, $type) {
 		global $CFG, $USER;
+		$aux = false;
 		foreach ($rs as $record) {
-            if (($record->visible 
-                    || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
-                    && is_viewing(context_course::instance($record->course), $USER->id)) {
+            if ($record->visible 
+                    || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) {
 				
 				//Send Resource name with link
 				$url = '';
 				switch ($type) {
-					case 'res': 
+					case TYPE_RESOURCE: 
 						$url = $CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
 							. $record->revision . '/' . $record->filename;
 						break;
 
-					case 'url':
+					case TYPE_URL:
 						$url = $record->externalurl;
+						break;
+
+					case TYPE_ASSIGN: 
+						$url = $CFG->wwwroot . '/mod/assign/view.php?id=' . $record->id;
 						break;
 
 				}
@@ -160,7 +176,8 @@ class resource_listener_conver extends Conversation {
                     ->withAttachment($attachment);
                 $this->say($message);
             }
-        }
+		}
+		$rs->close();
 	}
 
 	public function run() {

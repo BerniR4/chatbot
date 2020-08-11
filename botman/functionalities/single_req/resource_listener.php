@@ -77,6 +77,7 @@ class resource_listener {
                 $bot->reply($message);
             }
         }
+        $rs->close();
         $time_elapsed_secs = microtime(true) - $start;
         $bot->reply('Temps: ' . $time_elapsed_secs);
         return true;
@@ -118,7 +119,7 @@ class resource_listener {
                 $bot->reply($message);
             }
         }
-
+        $rs->close();
         return true;
     }
 }
