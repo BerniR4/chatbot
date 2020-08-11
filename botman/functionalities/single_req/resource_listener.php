@@ -9,14 +9,32 @@ use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use App\Http\Controllers\BotManController;
 
-class resource_listener {
-    function handle_resource_request ($bot, $resourcename) {
-        $file_search = self::search_resource_files($bot, $resourcename);
-        $url_search = self::search_resource_url($bot, $resourcename);
+include_once __DIR__ . '/../dbhelpers/resource_dbhelper.php';
 
-        if (!$file_search && !$url_search) {
-            $bot->reply(get_string('fullnoresourcematch', 'block_xatbot'));
-        }
+class resource_listener {
+
+    //may be a little redundant, as they are also defined in the resource_listener_conver.
+    const TYPE_RESOURCE = 1;
+	const TYPE_URL = 2;
+	const TYPE_ASSIGN = 3;
+
+    function handle_resource_request ($bot, $resourcename) {
+        //$start = microtime(true);
+
+        $rs_res = resource_dbhelper::search_resource_files($resourcename, null);
+        $rs_url = resource_dbhelper::search_resource_url($resourcename, null);
+        $rs_asg = resource_dbhelper::search_resource_assign($resourcename, null);
+
+        $rs_res = self::create_messages($rs_res, self::TYPE_RESOURCE, $bot);		
+        $rs_url = self::create_messages($rs_url, self::TYPE_URL, $bot);
+        $rs_asg = self::create_messages($rs_asg, self::TYPE_ASSIGN, $bot);
+
+        if ($rs_res == null && $rs_url == null && $rs_asg == null) {
+			$bot->reply(get_string('fullnoresourcematch', 'block_xatbot'));
+		}
+
+        //$time_elapsed_secs = microtime(true) - $start;
+        //$bot->reply('Temps: ' . $time_elapsed_secs);
 
         global $PAGE;
         $context = context::instance_by_id($_GET['context']);
@@ -36,90 +54,61 @@ class resource_listener {
 
     }
 
-    function search_resource_files($bot, $resourcename) {
-        global $DB, $CFG, $USER;
-        $start = microtime(true);
+    public function create_messages($rs, $type, $bot) {
+		global $CFG, $USER;
+		$aux = null;
+		foreach ($rs as $record) {
+            if ($record->visible 
+                    || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) {
+				
+				//Send Resource name with link
+				$url = '';
+				switch ($type) {
+					case self::TYPE_RESOURCE: 
+						$url = $CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
+							. $record->revision . '/' . $record->filename;
+						if ($aux == null) {
+							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_resource')));
+						}
+						break;
 
-        $rs = $DB->get_recordset_sql('SELECT r.id AS rid, r.name, c.id AS cid, r.revision, f.filename, cm.course, 
-                cm.visible, course.fullname FROM {resource} AS r, {context} AS c, {course_modules} AS cm, {files} AS f,
-                {course} AS course WHERE cm.deletioninprogress = 0 AND cm.module = :modulename 
-                AND r.id = cm.instance AND c.instanceid = cm.id AND cm.course = course.id
-                AND f.filename <> "." AND f.contextid = c.id AND c.contextlevel = :contextlevel 
-                AND UPPER(r.name) LIKE CONCAT("%", UPPER(:resourcename), "%");',
-            ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename, 
-            'modulename' => $DB->get_record('modules', ['name' => 'resource'])->id]);
-        
-        if (!$rs) {
-            return false;
-        }
+					case self::TYPE_URL:
+						$url = $record->externalurl;
+						if ($aux == null) {
+							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
+						}
+						break;
 
-        $bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_resource')));
+					case self::TYPE_ASSIGN: 
+						$url = $CFG->wwwroot . '/mod/assign/view.php?id=' . $record->id;
+						if ($aux == null) {
+							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_assign')));
+						}
+						break;
 
-        foreach ($rs as $record) {
-            if (($record->visible 
-                    || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
-                    && (is_enrolled(context_course::instance($record->course))) 
-                    || (is_viewing(context_course::instance($record->course)))) {
-                $attachment = new File($CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
-                    . $record->revision . '/' . $record->filename, [
-                    'custom_payload' => true,
-                ]);
+				}
+				$aux = true;
+
+				$attachment = new File($url, [
+					'custom_payload' => true,
+				]);
                 $message = OutgoingMessage::create($record->name)
                     ->withAttachment($attachment);
-                $bot->reply($message);
-                $bot->reply(get_string('compresourcematchcourse', 'block_xatbot'));
+				$bot->reply($message);
+				
+				//Send ' - course: ' separator
+				$bot->reply(get_string('compresourcematchcourse', 'block_xatbot'));
 
-                $attachment = new File($CFG->wwwroot . '/course/view.php?id=' . $record->course, [
+				//Send Course name with link
+				$attachment = new File($CFG->wwwroot . '/course/view.php?id=' . $record->course, [
                     'custom_payload' => true,
                 ]);
                 $message = OutgoingMessage::create($record->fullname)
                     ->withAttachment($attachment);
                 $bot->reply($message);
             }
-        }
-        $rs->close();
-        $time_elapsed_secs = microtime(true) - $start;
-        $bot->reply('Temps: ' . $time_elapsed_secs);
-        return true;
-    }
-
-    function search_resource_url($bot, $resourcename) {
-        global $DB, $CFG, $USER, $PAGE;
-        $rs = $DB->get_recordset_sql('SELECT u.name, u.externalurl, cm.course, cm.visible, course.fullname 
-                FROM {url} AS u, {context} AS c, {course_modules} AS cm, {course} AS course 
-                WHERE course.id = u.course AND c.instanceid = cm.id AND cm.module = 20 AND cm.deletioninprogress = 0 
-                AND u.id = cm.instance AND c.contextlevel = :contextlevel
-                AND UPPER(u.name) LIKE CONCAT("%", UPPER(:resourcename), "%");',
-            ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename]);
-        
-        if (!$rs) {
-            return false;
-        }
-
-        $bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
-
-        foreach ($rs as $record) {
-            if (($record->visible 
-                    || has_capability('moodle/course:viewhiddenactivities', context_course::instance($record->course))) 
-                    && (is_enrolled(context_course::instance($record->course))) 
-                    || (is_viewing(context_course::instance($record->course)))) {
-                $attachment = new File($record->externalurl, [
-                    'custom_payload' => true,
-                ]);
-                $message = OutgoingMessage::create($record->name)
-                    ->withAttachment($attachment);
-                $bot->reply($message);
-                $bot->reply(get_string('compresourcematchcourse', 'block_xatbot'));
-
-                $attachment = new File($CFG->wwwroot . '/course/view.php?id=' . $record->course, [
-                    'custom_payload' => true,
-                ]);
-                $message = OutgoingMessage::create($record->fullname)
-                    ->withAttachment($attachment);
-                $bot->reply($message);
-            }
-        }
-        $rs->close();
-        return true;
-    }
+		}
+		$rs->close();
+		return $aux;
+	}
 }
