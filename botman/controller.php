@@ -29,13 +29,12 @@ $adapter = new FilesystemAdapter();
 $botman = BotManFactory::create($config, new SymfonyCache($adapter));
 //$botman = BotManFactory::create($config);
 
-$botman->hears('Attachment .*', function ($bot) {
-	$attachment = new File('..\/blocks\/xatbot\/block_xatbot.php', [
-		'custom_payload' => true,
-	]);
-	$message = OutgoingMessage::create('Aquí està el fitxer:')
-		->withAttachment($attachment);
-	$bot->reply($message);
+$botman->hears('Attachment', function ($bot) {
+	$bot->reply('ha tirat 1');
+});
+
+$botman->hears('Attachment {name}', function ($bot) {
+	$bot->reply('ha tirat 2');
 });
 
 //$botman->hears('{test}', function($bot, $test) {
@@ -67,7 +66,7 @@ $botman->hears('call me ([^\s]+)( the ([^\s]+))?( with ([^\s]+) size)?', functio
 
 $botman->hears('Prova2 {nametest}', function($bot, $nametest) {
 	$bot->reply('Hello You truly are' . var_dump($bot->getMessage()));
-})->middleware(new resource_matching_middleware());
+});
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +76,8 @@ $botman->hears('Hello', function ($bot) {
 	$bot->reply(get_string('fullwelcome2', 'block_xatbot'));
 })->stopsConversation();
 
-$botman->hears(get_string('hearingresourcerequest', 'block_xatbot'), 'resource_listener::handle_resource_request');
+$botman->hears(get_string('hearingresourcerequest', 'block_xatbot'), 'resource_listener::handle_resource_request')
+	->middleware(new resource_matching_middleware());
 //$botman->hears('Recurs ([a-zA-Z ]*)(|, course ([a-zA-Z ]*))(|, alumn ([a-zA-Z ]*))', 'Xatbot\resource_listener::handle_resource_request');
 
 $botman->hears(get_string('hearingresourceconver', 'block_xatbot'), function($bot) {
