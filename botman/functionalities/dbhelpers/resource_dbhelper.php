@@ -1,8 +1,12 @@
 <?php
 
+defined('TYPE_RESOURCE') || define('TYPE_RESOURCE', 1);
+defined('TYPE_URL') || define('TYPE_URL', 2);
+defined('TYPE_ASSIGN') || define('TYPE_ASSIGN', 3);
+
 class resource_dbhelper {
 
-    public static function search_resource_files($resourcename, $course) {
+    public static function search_resource_files($resourcename, $coursename, $courseid = null) {
         global $DB, $USER;
 
         $select = 'SELECT DISTINCT r.id AS rid, r.name, c.id AS cid, r.revision, f.filename, cm.course, cm.visible, 
@@ -23,20 +27,25 @@ class resource_dbhelper {
             $where = $where . ' AND UPPER(r.name) LIKE CONCAT("%", UPPER(:resourcename), "%")';
         }
 
-        if ($course != null) {
+        if ($coursename != null) {
             $where = $where . ' AND UPPER(course.fullname) LIKE CONCAT("%", UPPER(:coursename), "%")';
+        }
+
+        if ($courseid != null) {
+            $courseid = $courseid + 0;
+            $where = $where . ' AND course.id = :courseid';
         }
 
         $query = $select . $from . $where . ';';
 
         $rs = $DB->get_recordset_sql($query, ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename, 
-            'moduleid' => $DB->get_record('modules', ['name' => 'resource'])->id, 'coursename' => $course,
-            'userid' => $USER->id]);
+            'moduleid' => $DB->get_record('modules', ['name' => 'resource'])->id, 'coursename' => $coursename,
+            'userid' => $USER->id, 'courseid' => $courseid]);
         
         return $rs;
     }
 
-    public static function search_resource_url($resourcename, $course) {
+    public static function search_resource_url($resourcename, $coursename) {
         global $DB, $USER;
 
         $select = 'SELECT DISTINCT u.name, u.externalurl, cm.course, cm.visible, course.fullname';
@@ -54,20 +63,20 @@ class resource_dbhelper {
             $where = $where . ' AND UPPER(u.name) LIKE CONCAT("%", UPPER(:resourcename), "%")';
         }
 
-        if ($course != null) {
+        if ($coursename != null) {
             $where = $where . ' AND UPPER(course.fullname) LIKE CONCAT("%", UPPER(:coursename), "%")';
         }
 
         $query = $select . $from . $where . ';';
 
         $rs = $DB->get_recordset_sql($query, ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename, 
-            'moduleid' => $DB->get_record('modules', ['name' => 'url'])->id, 'coursename' => $course,
+            'moduleid' => $DB->get_record('modules', ['name' => 'url'])->id, 'coursename' => $coursename,
             'userid' => $USER->id]);
 
         return $rs;
     }
 
-    public static function search_resource_assign($resourcename, $course) {
+    public static function search_resource_assign($resourcename, $coursename) {
         global $DB, $USER;
 
         $select = 'SELECT DISTINCT a.name, cm.id, cm.course, cm.visible, course.fullname ';
@@ -85,14 +94,14 @@ class resource_dbhelper {
             $where = $where . ' AND UPPER(a.name) LIKE CONCAT("%", UPPER(:resourcename), "%")';
         }
 
-        if ($course != null) {
+        if ($coursename != null) {
             $where = $where . ' AND UPPER(course.fullname) LIKE CONCAT("%", UPPER(:coursename), "%")';
         }
 
         $query = $select . $from . $where . ';';
 
         $rs = $DB->get_recordset_sql($query, ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename, 
-            'moduleid' => $DB->get_record('modules', ['name' => 'assign'])->id, 'coursename' => $course,
+            'moduleid' => $DB->get_record('modules', ['name' => 'assign'])->id, 'coursename' => $coursename,
             'userid' => $USER->id]);
         
         return $rs;

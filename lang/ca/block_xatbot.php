@@ -4,12 +4,12 @@ $string['xatbot'] = 'Xatbot';
 $string['xatbot:addinstance'] = 'Afegeix un nou Bloc Xatbot';
 $string['xatbot:myaddinstance'] = 'Afegeix un nou Bloc Xatbot a la meva pagina de Moodle';
 $string['blockstring'] = 'Modifica el text';
-$string['eventtest'] = 'Això és una prova';
 
 //Missatges estàtics complets
 $string['fullwelcome1'] = 'Bones! Sóc LSBot, un Xatbot que t\'ajudarà a recuperar informació de Moodle.';
 $string['fullwelcome2'] = 'Per a cercar un recurs, utilitza la paraula clau "Recurs", 
         seguit d\'allò que vulguis cercar. Per exemple: "Recurs prova"';
+$string['fullfallback'] = 'Ho sento, no he entès què has dit.';
 $string['fullresourcematch'] = 'Del tipus "{$a}", s\'han trobat les següents coincidencies:';
 $string['fullnoresourcematch'] = 'No s\'han trobat coincidencies';
 $string['fullaskresourcename'] = 'Quin nom té el recurs?';
@@ -21,7 +21,7 @@ $string['buttonall'] = 'Tots';
 $string['compresourcematchcourse'] = ' - Curs: ';
 
 //Peticions úniques a escoltar
-$string['hearingresourcerequest'] = 'Recurs ([a-zA-Z ]*)';
+$string['hearingresourcerequest'] = 'Recurs (.*)';
 
 //Conversacions a escoltar
 $string['hearingresourceconver'] = '.*Recurs';

@@ -11,10 +11,6 @@ include_once __DIR__ . '/../dbhelpers/resource_dbhelper.php';
 
 class resource_listener_conver extends Conversation {
 
-	const TYPE_RESOURCE = 1;
-	const TYPE_URL = 2;
-	const TYPE_ASSIGN = 3;
-	
 	/** @var string */
 	protected $name;
 
@@ -53,11 +49,11 @@ class resource_listener_conver extends Conversation {
 		$this->ask($question, function (Answer $answer) {
 			$this->type = null;
 			if (strcasecmp($answer->getText(), get_string('pluginname', 'mod_resource')) == 0) {
-				$this->type = self::TYPE_RESOURCE;
+				$this->type = TYPE_RESOURCE;
 			} elseif (strcasecmp($answer->getText(), get_string('pluginname', 'mod_url')) == 0) {
-				$this->type = self::TYPE_URL;
+				$this->type = TYPE_URL;
 			} elseif (strcasecmp($answer->getText(), get_string('pluginname', 'mod_assign')) == 0) {
-				$this->type = self::TYPE_ASSIGN;
+				$this->type = TYPE_ASSIGN;
 			}
 
 			$this->ask_course();
@@ -85,15 +81,15 @@ class resource_listener_conver extends Conversation {
 		$rs_asg = null;
 
 		switch ($this->type) {
-			case self::TYPE_RESOURCE:
+			case TYPE_RESOURCE:
 				$rs_res = resource_dbhelper::search_resource_files($this->name, $this->course);
 				break;
 			
-			case self::TYPE_URL:
+			case TYPE_URL:
 				$rs_url = resource_dbhelper::search_resource_url($this->name, $this->course);
 				break;
 
-			case self::TYPE_ASSIGN:
+			case TYPE_ASSIGN:
 				$rs_asg = resource_dbhelper::search_resource_assign($this->name, $this->course);
 				break;
 
@@ -107,15 +103,15 @@ class resource_listener_conver extends Conversation {
 		if ($rs_res != null && $rs_res->valid()) {
 			//After create_messages, the result set is emptied, that's why it is needed assign a value to know it was
 			//used (in order to send the correct message)
-			$rs_res = $this->create_messages($rs_res, self::TYPE_RESOURCE);		
+			$rs_res = $this->create_messages($rs_res, TYPE_RESOURCE);		
 		}
 
 		if ($rs_url != null && $rs_url->valid()) {
-			$rs_url = $this->create_messages($rs_url, self::TYPE_URL);
+			$rs_url = $this->create_messages($rs_url, TYPE_URL);
 		}
 		
 		if ($rs_asg != null && $rs_asg->valid()) {
-			$rs_asg = $this->create_messages($rs_asg, self::TYPE_ASSIGN);
+			$rs_asg = $this->create_messages($rs_asg, TYPE_ASSIGN);
 		}
 
 		if ($rs_res == null && $rs_url == null && $rs_asg == null) {
@@ -150,7 +146,7 @@ class resource_listener_conver extends Conversation {
 				//Send Resource name with link
 				$url = '';
 				switch ($type) {
-					case self::TYPE_RESOURCE: 
+					case TYPE_RESOURCE: 
 						$url = $CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
 							. $record->revision . '/' . $record->filename;
 						if ($aux == null) {
@@ -158,14 +154,14 @@ class resource_listener_conver extends Conversation {
 						}
 						break;
 
-					case self::TYPE_URL:
+					case TYPE_URL:
 						$url = $record->externalurl;
 						if ($aux == null) {
 							$this->say(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
 						}
 						break;
 
-					case self::TYPE_ASSIGN: 
+					case TYPE_ASSIGN: 
 						$url = $CFG->wwwroot . '/mod/assign/view.php?id=' . $record->id;
 						if ($aux == null) {
 							$this->say(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_assign')));

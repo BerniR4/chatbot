@@ -13,21 +13,23 @@ include_once __DIR__ . '/../dbhelpers/resource_dbhelper.php';
 
 class resource_listener {
 
-    //may be a little redundant, as they are also defined in the resource_listener_conver.
-    const TYPE_RESOURCE = 1;
-	const TYPE_URL = 2;
-	const TYPE_ASSIGN = 3;
-
     function handle_resource_request ($bot, $resourcename) {
         //$start = microtime(true);
 
-        $rs_res = resource_dbhelper::search_resource_files($resourcename, null);
+		$courseid = null;
+		$context = context_course::instance($_GET['course'], IGNORE_MISSING);
+		if ($context != false && $context->get_course_context(false) 
+				&& (is_viewing($context) || is_enrolled($context))) {
+			$courseid = $_GET['course'];
+		}
+
+        $rs_res = resource_dbhelper::search_resource_files($resourcename, null, $courseid);
         $rs_url = resource_dbhelper::search_resource_url($resourcename, null);
         $rs_asg = resource_dbhelper::search_resource_assign($resourcename, null);
 
-        $rs_res = self::create_messages($rs_res, self::TYPE_RESOURCE, $bot);		
-        $rs_url = self::create_messages($rs_url, self::TYPE_URL, $bot);
-        $rs_asg = self::create_messages($rs_asg, self::TYPE_ASSIGN, $bot);
+        $rs_res = self::create_messages($rs_res, TYPE_RESOURCE, $bot);		
+        $rs_url = self::create_messages($rs_url, TYPE_URL, $bot);
+        $rs_asg = self::create_messages($rs_asg, TYPE_ASSIGN, $bot);
 
         if ($rs_res == null && $rs_url == null && $rs_asg == null) {
 			$bot->reply(get_string('fullnoresourcematch', 'block_xatbot'));
@@ -37,12 +39,11 @@ class resource_listener {
         //$bot->reply('Temps: ' . $time_elapsed_secs);
 
         global $PAGE;
-        $context = context::instance_by_id($_GET['context']);
-        if ($context->get_course_context(false) 
-                && (is_viewing(context::instance_by_id($_GET['context'])) 
-                || is_enrolled(context::instance_by_id($_GET['context'])))) {
+        $context = context::instance_by_id($_GET['context'], IGNORE_MISSING);
+		if ($context != false && $context->get_course_context(false) 
+				&& (is_viewing($context) || is_enrolled($context))) {
             $event = \block_xatbot\event\resource_searched::create(array(
-            'context' => context::instance_by_id($_GET['context']), 
+            'context' => $context, 
             ));
         } else {
             $event = \block_xatbot\event\resource_searched::create(array(
@@ -64,7 +65,7 @@ class resource_listener {
 				//Send Resource name with link
 				$url = '';
 				switch ($type) {
-					case self::TYPE_RESOURCE: 
+					case TYPE_RESOURCE: 
 						$url = $CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
 							. $record->revision . '/' . $record->filename;
 						if ($aux == null) {
@@ -72,14 +73,14 @@ class resource_listener {
 						}
 						break;
 
-					case self::TYPE_URL:
+					case TYPE_URL:
 						$url = $record->externalurl;
 						if ($aux == null) {
 							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
 						}
 						break;
 
-					case self::TYPE_ASSIGN: 
+					case TYPE_ASSIGN: 
 						$url = $CFG->wwwroot . '/mod/assign/view.php?id=' . $record->id;
 						if ($aux == null) {
 							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_assign')));

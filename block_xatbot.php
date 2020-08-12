@@ -24,8 +24,8 @@ class block_xatbot extends block_base {
 			'requires' => array(),
 			'strings' => array()
 		);
-		$this->page->requires->js_init_call('M.block_xatbot.init', array($this->uuidv4(), $this->page->context->id), 
-			false, $jsmodule);
+		$this->page->requires->js_init_call('M.block_xatbot.init', array($this->uuidv4(), $this->page->context->id, 
+			$this->page->course->id), false, $jsmodule);
 		return $this->content;
 	}
 

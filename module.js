@@ -7,16 +7,16 @@ M.block_xatbot = {
     /**
      * Initiates the connection with botman and adds events listeners
      */
-    init : function(Y, userId, contexttId) {
+    init : function(Y, userId, contextId, courseId) {
         this.userId = userId;
-        this.URL = this.URL + contexttId;
+        this.URL = this.URL + contextId + '&course=' + courseId;
 
         var self = this;
         //Add listeners
         $('textarea.m_xat-input').on('keypress', this.manageKeyPress);
         $('#m_xat-rec').on('click', this.manageSend);
 
-        this.send('hello');
+        this.send('welcome_message');
 
     	setTimeout(function() {
             self.showLoading();
