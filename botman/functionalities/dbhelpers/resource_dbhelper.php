@@ -32,7 +32,6 @@ class resource_dbhelper {
         }
 
         if ($courseid != null) {
-            $courseid = $courseid + 0;
             $where = $where . ' AND course.id = :courseid';
         }
 
@@ -45,7 +44,7 @@ class resource_dbhelper {
         return $rs;
     }
 
-    public static function search_resource_url($resourcename, $coursename) {
+    public static function search_resource_url($resourcename, $coursename, $courseid = null) {
         global $DB, $USER;
 
         $select = 'SELECT DISTINCT u.name, u.externalurl, cm.course, cm.visible, course.fullname';
@@ -67,16 +66,20 @@ class resource_dbhelper {
             $where = $where . ' AND UPPER(course.fullname) LIKE CONCAT("%", UPPER(:coursename), "%")';
         }
 
+        if ($courseid != null) {
+            $where = $where . ' AND course.id = :courseid';
+        }
+
         $query = $select . $from . $where . ';';
 
         $rs = $DB->get_recordset_sql($query, ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename, 
             'moduleid' => $DB->get_record('modules', ['name' => 'url'])->id, 'coursename' => $coursename,
-            'userid' => $USER->id]);
+            'userid' => $USER->id, 'courseid' => $courseid]);
 
         return $rs;
     }
 
-    public static function search_resource_assign($resourcename, $coursename) {
+    public static function search_resource_assign($resourcename, $coursename, $courseid = null) {
         global $DB, $USER;
 
         $select = 'SELECT DISTINCT a.name, cm.id, cm.course, cm.visible, course.fullname ';
@@ -98,11 +101,15 @@ class resource_dbhelper {
             $where = $where . ' AND UPPER(course.fullname) LIKE CONCAT("%", UPPER(:coursename), "%")';
         }
 
+        if ($courseid != null) {
+            $where = $where . ' AND course.id = :courseid';
+        }
+
         $query = $select . $from . $where . ';';
 
         $rs = $DB->get_recordset_sql($query, ['contextlevel' => CONTEXT_MODULE, 'resourcename' => $resourcename, 
             'moduleid' => $DB->get_record('modules', ['name' => 'assign'])->id, 'coursename' => $coursename,
-            'userid' => $USER->id]);
+            'userid' => $USER->id, 'courseid' => $courseid]);
         
         return $rs;
     }

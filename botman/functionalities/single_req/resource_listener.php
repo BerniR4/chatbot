@@ -13,23 +13,66 @@ include_once __DIR__ . '/../dbhelpers/resource_dbhelper.php';
 
 class resource_listener {
 
-    function handle_resource_request ($bot, $resourcename) {
-        //$start = microtime(true);
+    function handle_resource_request ($bot, $restype1, $restype2, $resname) {
+		//$start = microtime(true);
+		//$bot->reply(var_dump($bot));
+
+		$restype = null;
+
+		if ($restype1 != null) {
+			$restype = trim($restype1);
+		} elseif ($restype2 != null) {
+			$restype = trim($restype2);
+		}
+
+		if (strcasecmp($restype, get_string('pluginname', 'mod_resource')) == 0) {
+			$restype = TYPE_RESOURCE;
+		} elseif (strcasecmp($restype, get_string('pluginname', 'mod_url')) == 0) {
+			$restype = TYPE_URL;
+		} elseif (strcasecmp($restype, get_string('pluginname', 'mod_assign')) == 0) {
+			$restype = TYPE_ASSIGN;
+		}
 
 		$courseid = null;
 		$context = context_course::instance($_GET['course'], IGNORE_MISSING);
-		if ($context != false && $context->get_course_context(false) 
+		if ($_GET['course'] != 1 && $context != false && $context->get_course_context(false) 
 				&& (is_viewing($context) || is_enrolled($context))) {
 			$courseid = $_GET['course'];
 		}
 
-        $rs_res = resource_dbhelper::search_resource_files($resourcename, null, $courseid);
-        $rs_url = resource_dbhelper::search_resource_url($resourcename, null);
-        $rs_asg = resource_dbhelper::search_resource_assign($resourcename, null);
+		switch ($restype) {
+			case TYPE_RESOURCE:
+				$rs_res = resource_dbhelper::search_resource_files($resname, null, $courseid);
+				break;
+			
+			case TYPE_URL:
+				$rs_url = resource_dbhelper::search_resource_url($resname, null, $courseid);
+				break;
 
-        $rs_res = self::create_messages($rs_res, TYPE_RESOURCE, $bot);		
-        $rs_url = self::create_messages($rs_url, TYPE_URL, $bot);
-        $rs_asg = self::create_messages($rs_asg, TYPE_ASSIGN, $bot);
+			case TYPE_ASSIGN:
+				$rs_asg = resource_dbhelper::search_resource_assign($resname, null, $courseid);
+				break;
+
+			default:
+				$rs_res = resource_dbhelper::search_resource_files($resname, null, $courseid);
+				$rs_url = resource_dbhelper::search_resource_url($resname, null, $courseid);
+				$rs_asg = resource_dbhelper::search_resource_assign($resname, null, $courseid);
+
+		}
+
+		if ($rs_res != null && $rs_res->valid()) {
+			//After create_messages, the result set is emptied, that's why it is needed assign a value to know it was
+			//used (in order to send the correct message)
+			$rs_res = self::create_messages($rs_res, TYPE_RESOURCE, $bot);		
+		}
+
+		if ($rs_url != null && $rs_url->valid()) {
+			$rs_url = self::create_messages($rs_url, TYPE_URL, $bot);
+		}
+		
+		if ($rs_asg != null && $rs_asg->valid()) {
+			$rs_asg = self::create_messages($rs_asg, TYPE_ASSIGN, $bot);
+		}
 
         if ($rs_res == null && $rs_url == null && $rs_asg == null) {
 			$bot->reply(get_string('fullnoresourcematch', 'block_xatbot'));

@@ -34,6 +34,9 @@ $botman->hears('welcome_message', function ($bot) {
 	$bot->reply(get_string('fullwelcome2', 'block_xatbot'));
 })->stopsConversation();
 
+//$botman->hears('.*(Busca( recurs)?|(Busca )?recurs) (?<resname>.*)', 'resource_listener::handle_resource_request')
+//	->middleware(new resource_matching_middleware());
+
 $botman->hears(get_string('hearingresourcerequest', 'block_xatbot'), 'resource_listener::handle_resource_request')
 	->middleware(new resource_matching_middleware());
 

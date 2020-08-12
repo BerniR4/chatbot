@@ -10,6 +10,6 @@ class resource_matching_middleware implements Matching {
 
         preg_match('/' . $pattern . '/i', $message->getText(), $output);
 
-        return $regexMatched && strlen($output[1]) > 0 ;
+        return $regexMatched && strlen($output['resname']) > 0 ;
     }
 }

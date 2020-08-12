@@ -21,10 +21,11 @@ $string['buttonall'] = 'Tots';
 $string['compresourcematchcourse'] = ' - Curs: ';
 
 //Peticions úniques a escoltar
-$string['hearingresourcerequest'] = 'Recurs (.*)';
+$string['hearingresourcerequest'] = '.*(Busca(?<restype1> recurs| fitxer| url| tasca)?|(Busca )?(?<restype2>recurs|fitxer|url|tasca)) (?<resname>.*)';
 
 //Conversacions a escoltar
-$string['hearingresourceconver'] = '.*Recurs';
+$string['hearingresourceconver'] = '.*(Busca(?<restype1> recurs| fitxer| url| tasca)?|(Busca )?(?<restype2>recurs|fitxer|url|tasca))';
+
 
 //Esdeveniments
 $string['resourcesearchevent'] = 'S\'ha cercat recurs';
