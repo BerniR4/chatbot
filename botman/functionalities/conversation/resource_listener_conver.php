@@ -32,7 +32,11 @@ class resource_listener_conver extends Conversation {
 				$this->name = $answer->getText(); 
 			}
 
-			$this->ask_type();
+			if ($this->type == null) {
+				$this->ask_type();
+			} else {
+				$this->ask_course();
+			}
 		});
 	}
 
@@ -195,6 +199,24 @@ class resource_listener_conver extends Conversation {
 	}
 
 	public function run() {
+		$this->type = null;
+		$restype1 = $this->getBot()->getMatches()['restype1'];
+		$restype2 = $this->getBot()->getMatches()['restype2'];
+
+		if ($restype1 != null) {
+			$this->type = trim($restype1);
+		} elseif ($restype2 != null) {
+			$this->type = trim($restype2);
+		}
+
+		if (strcasecmp($this->type, get_string('pluginname', 'mod_resource')) == 0) {
+			$this->type = TYPE_RESOURCE;
+		} elseif (strcasecmp($this->type, get_string('pluginname', 'mod_url')) == 0) {
+			$this->type = TYPE_URL;
+		} elseif (strcasecmp($this->type, get_string('pluginname', 'mod_assign')) == 0) {
+			$this->type = TYPE_ASSIGN;
+		}
+
 		$this->ask_name();
 	}
 
