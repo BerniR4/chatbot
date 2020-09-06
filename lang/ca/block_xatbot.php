@@ -24,7 +24,7 @@ $string['compresourcematchcourse'] = ' - Curs: ';
 $string['hearingresourcerequest'] = '.*(Busca(?<restype1> recurs| fitxer| url| tasca)?|(Busca )?(?<restype2>recurs|fitxer|url|tasca)) (?<resname>.*)';
 
 //Conversacions a escoltar
-$string['hearingresourceconver'] = '.*(Busca(?<restype1> recurs| fitxer| url| tasca)?|(Busca )?(?<restype2>recurs|fitxer|url|tasca))';
+$string['hearingresourceconver'] = '(Busca|(?<restype2>recurs|fitxer|url|tasca))';
 
 
 //Esdeveniments

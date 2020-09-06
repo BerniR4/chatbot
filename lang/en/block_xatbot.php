@@ -25,7 +25,7 @@ $string['compresourcematchcourse'] = ' - Course: ';
 $string['hearingresourcerequest'] = '.*(Search(?<restype1> resource| file| url| assign)?|(Search )?(?<restype2>resource|file|url|assign)) (?<resname>.*)';
 
 //Hearing conversations
-$string['hearingresourceconver'] = '.*(Search(?<restype1> resource| file| url| assign)?|(Search )?(?<restype2>resource|file|url|assign))';
+$string['hearingresourceconver'] = '(Search|(?<restype2>resource|file|url|assign))';
 
 //Events
 $string['resourcesearchevent'] = 'Resource search';
