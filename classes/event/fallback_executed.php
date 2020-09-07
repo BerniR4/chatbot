@@ -3,7 +3,7 @@
 namespace block_xatbot\event;
 defined('MOODLE_INTERNAL') || die();
 
-class resource_searched extends \core\event\base {
+class fallback_executed extends \core\event\base {
 
     protected function init() {
         $this->data['crud'] = 'u';
@@ -11,11 +11,11 @@ class resource_searched extends \core\event\base {
     }
 
     public function get_description() {
-        return 'User with id ' . $this->userid . ' has searched a resource using the chatbot.';
+        return 'User with id ' . $this->userid . ' called an unknown chatbot function.';
     }
 
     public static function get_name() {
-        return get_string('resourcesearchevent', 'block_xatbot');
+        return get_string('fallbackevent', 'block_xatbot');
     }
 
     public function get_url() {

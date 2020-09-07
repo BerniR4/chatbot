@@ -34,17 +34,34 @@ $botman->hears('welcome_message', function ($bot) {
 	$bot->reply(get_string('fullwelcome2', 'block_xatbot'));
 })->stopsConversation();
 
-//$botman->hears('.*(Busca( recurs)?|(Busca )?recurs) (?<resname>.*)', 'resource_listener::handle_resource_request')
-//	->middleware(new resource_matching_middleware());
-
+//Listen resource search single request
 $botman->hears(get_string('hearingresourcerequest', 'block_xatbot'), 'resource_listener::handle_resource_request')
 	->middleware(new resource_matching_middleware());
 
+//Listen resource search conversation
 $botman->hears(get_string('hearingresourceconver', 'block_xatbot'), function($bot) {
 	$bot->startConversation(new resource_listener_conver);
 });
 
 $botman->fallback(function($bot) {
+	//Log
+	global $PAGE;
+	$context = context::instance_by_id($_GET['context']);
+	if ($context->get_course_context(false) 
+			&& (is_viewing(context::instance_by_id($_GET['context'])) 
+			|| is_enrolled(context::instance_by_id($_GET['context'])))) {
+		$event = \block_xatbot\event\fallback_executed::create(array(
+			'context' => context::instance_by_id($_GET['context']), 
+		));
+	} else {
+		$event = \block_xatbot\event\fallback_executed::create(array(
+			'context' => $PAGE->context, 
+		));
+	}
+
+	$event->trigger();
+
+	//Reply
 	$bot->reply('No entenc què dius');
 });
 

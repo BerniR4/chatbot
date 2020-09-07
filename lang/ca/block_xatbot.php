@@ -11,7 +11,7 @@ $string['fullwelcome2'] = 'Per a cercar un recurs, utilitza la paraula clau "Rec
         seguit d\'allò que vulguis cercar. Per exemple: "Recurs prova"';
 $string['fullfallback'] = 'Ho sento, no he entès què has dit.';
 $string['fullresourcematch'] = 'Del tipus "{$a}", s\'han trobat les següents coincidencies:';
-$string['fullnoresourcematch'] = 'No s\'han trobat coincidencies';
+$string['fullnoresourcematch'] = 'No s\'han trobat coincidències';
 $string['fullaskresourcename'] = 'Quin nom té el recurs?';
 $string['fullaskresourcetype'] = 'Quin tipus de recurs vols?';
 $string['fullaskresourcecourse'] = 'De quin curs?';
@@ -26,6 +26,6 @@ $string['hearingresourcerequest'] = '.*(Busca(?<restype1> recurs| fitxer| url| t
 //Conversacions a escoltar
 $string['hearingresourceconver'] = '(Busca|(?<restype2>recurs|fitxer|url|tasca))';
 
-
 //Esdeveniments
 $string['resourcesearchevent'] = 'S\'ha cercat recurs';
+$string['fallbackevent'] = 'S\'ha realitzat una petició desconeguda';

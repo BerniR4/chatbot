@@ -29,3 +29,4 @@ $string['hearingresourceconver'] = '(Search|(?<restype2>resource|file|url|assign
 
 //Events
 $string['resourcesearchevent'] = 'Resource search';
+$string['fallbackevent'] = 'Unknown request made';
