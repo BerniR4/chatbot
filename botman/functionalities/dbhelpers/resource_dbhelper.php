@@ -47,7 +47,7 @@ class resource_dbhelper {
     public static function search_resource_url($resourcename, $coursename, $courseid = null) {
         global $DB, $USER;
 
-        $select = 'SELECT DISTINCT u.name, u.externalurl, cm.course, cm.visible, course.fullname';
+        $select = 'SELECT DISTINCT u.name, cm.id, cm.course, cm.visible, course.fullname';
         $from = ' FROM {url} AS u, {context} AS c, {course_modules} AS cm, {course} AS course';
         $where = ' WHERE course.id = u.course AND c.instanceid = cm.id AND cm.module = :moduleid 
             AND cm.deletioninprogress = 0 AND u.id = cm.instance AND c.contextlevel = :contextlevel';

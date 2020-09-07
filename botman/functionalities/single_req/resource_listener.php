@@ -117,7 +117,7 @@ class resource_listener {
 						break;
 
 					case TYPE_URL:
-						$url = $record->externalurl;
+						$url = $CFG->wwwroot . '/mod/url/view.php?id=' . $record->id;
 						if ($aux == null) {
 							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
 						}

@@ -159,7 +159,7 @@ class resource_listener_conver extends Conversation {
 						break;
 
 					case TYPE_URL:
-						$url = $record->externalurl;
+						$url = $CFG->wwwroot . '/mod/url/view.php?id=' . $record->id;
 						if ($aux == null) {
 							$this->say(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
 						}
