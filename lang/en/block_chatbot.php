@@ -28,7 +28,7 @@
 // Contact info: Daniel Amo Filvà  danielamo @ gmail.com or daniel.amo @ salle.url.edu.
 
 /**
- * Version file.
+ * Strings for component 'block_chatbot', language 'ca'
  *
  * @package    block_chatbot
  * @copyright  2020 Daniel Amo, Bernat Rovirosa
@@ -39,8 +39,34 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+$string['pluginname'] = 'Chatbot Block';
+$string['chatbot'] = 'Chatbot';
+$string['chatbot:addinstance'] = 'Add a new Chatbot Block';
+$string['chatbot:myaddinstance'] = 'Add a new Chatbot Block to the My Moodle page';
+$string['blockstring'] = 'Edit';
 
-$plugin->component = 'block_chatbot';
-$plugin->version = 2020090702;
-$plbuin->requires = 2020042400;
+//Full static messages
+$string['fullwelcome1'] = 'Hi! I\'m LSBot, a Chatbot who will help you retrieve information from Moodle.';
+$string['fullwelcome2'] = 'To search for a resource, use the keyword "Resource", followed by what you want 
+        to search for. For example: "Resource test"';
+$string['fullfallback'] = 'Sorry, I don\'t understand what you said.';
+$string['fullresourcematch'] = 'Of type "{$a}", the following matches have been found:';
+$string['fullnoresourcematch'] = 'No matches have been found';
+$string['fullaskresourcename'] = 'What is the name of the resource?';
+$string['fullaskresourcetype'] = 'What type of resource do you want?';
+$string['fullaskresourcecourse'] = 'Of which course?';
+
+$string['buttonall'] = 'Tots';
+
+//Static message components
+$string['compresourcematchcourse'] = ' - Course: ';
+
+//Hearing single requests
+$string['hearingresourcerequest'] = '.*(Search(?<restype1> resource| file| url| assign)?|(Search )?(?<restype2>resource|file|url|assign)) (?<resname>.*)';
+
+//Hearing conversations
+$string['hearingresourceconver'] = '(Search|(?<restype2>resource|file|url|assign))';
+
+//Events
+$string['resourcesearchevent'] = 'Resource search';
+$string['fallbackevent'] = 'Unknown request made';

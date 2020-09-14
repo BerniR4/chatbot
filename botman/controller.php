@@ -1,5 +1,44 @@
 <?php
 
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// This file is part of XatBotMoodle
+//
+// XatBotMoodle is a chatbot developed in Catalunya that helps search content in an easy,
+// interactive and conversational manner. This project implements a chatbot inside a block
+// for Moodle. Moodle is a Free Open source Learning Management System by Martin Dougiamas.
+// XatBotMoodle is a project initiated and leaded by Daniel Amo at the GRETEL research
+// group at La Salle Campus Barcelona, Universitat Ramon Llull.
+//
+// XatBotMoodle is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
+// of the La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
+// Contact info: Daniel Amo Filvà  danielamo @ gmail.com or daniel.amo @ salle.url.edu.
+
+/**
+ * BotMan controller file.
+ *
+ * @package    block_chatbot
+ * @copyright  2020 Daniel Amo, Bernat Rovirosa
+ *  daniel.amo@salle.url.edu
+ * @copyright  2020 La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
+ * @author     Daniel Amo
+ * @author     Bernat Rovirosa
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once 'vendor/autoload.php';
 require_once __DIR__ . '/../../../config.php' ;
 
@@ -30,38 +69,37 @@ $botman = BotManFactory::create($config, new SymfonyCache($adapter));
 
 //Welcome message 
 $botman->hears('welcome_message', function ($bot) {
-	$bot->reply(get_string('fullwelcome1', 'block_xatbot'));
-	$bot->reply(get_string('fullwelcome2', 'block_xatbot'));
+	$bot->reply(get_string('fullwelcome1', 'block_chatbot'));
+	$bot->reply(get_string('fullwelcome2', 'block_chatbot'));
 })->stopsConversation();
 
 //Listen resource search single request
-$botman->hears(get_string('hearingresourcerequest', 'block_xatbot'), 'resource_listener::handle_resource_request')
+$botman->hears(get_string('hearingresourcerequest', 'block_chatbot'), 'resource_listener::handle_resource_request')
 	->middleware(new resource_matching_middleware());
 
 //Listen resource search conversation
-$botman->hears(get_string('hearingresourceconver', 'block_xatbot'), function($bot) {
+$botman->hears(get_string('hearingresourceconver', 'block_chatbot'), function($bot) {
 	$bot->startConversation(new resource_listener_conver);
 });
 
 $botman->fallback(function($bot) {
-	//Log
+	//Create log
 	global $PAGE;
 	$context = context::instance_by_id($_GET['context']);
 	if ($context->get_course_context(false) 
 			&& (is_viewing(context::instance_by_id($_GET['context'])) 
 			|| is_enrolled(context::instance_by_id($_GET['context'])))) {
-		$event = \block_xatbot\event\fallback_executed::create(array(
+		$event = \block_chatbot\event\fallback_executed::create(array(
 			'context' => context::instance_by_id($_GET['context']), 
 		));
 	} else {
-		$event = \block_xatbot\event\fallback_executed::create(array(
+		$event = \block_chatbot\event\fallback_executed::create(array(
 			'context' => $PAGE->context, 
 		));
 	}
 
 	$event->trigger();
 
-	//Reply
 	$bot->reply('No entenc què dius');
 });
 

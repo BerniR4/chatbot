@@ -1,11 +1,50 @@
-M.block_xatbot = {
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// This file is part of XatBotMoodle
+//
+// XatBotMoodle is a chatbot developed in Catalunya that helps search content in an easy,
+// interactive and conversational manner. This project implements a chatbot inside a block
+// for Moodle. Moodle is a Free Open source Learning Management System by Martin Dougiamas.
+// XatBotMoodle is a project initiated and leaded by Daniel Amo at the GRETEL research
+// group at La Salle Campus Barcelona, Universitat Ramon Llull.
+//
+// XatBotMoodle is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
+// of the La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
+// Contact info: Daniel Amo Filvà  danielamo @ gmail.com or daniel.amo @ salle.url.edu.
+
+/**
+ * Javascript file to manage the chat interface.
+ *
+ * @package    block_chatbot
+ * @copyright  2020 Daniel Amo, Bernat Rovirosa
+ *  daniel.amo@salle.url.edu
+ * @copyright  2020 La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
+ * @author     Daniel Amo
+ * @author     Bernat Rovirosa
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+M.block_chatbot = {
     DEFAULT_TIME_DELAY : 1000,
-    URL : M.cfg.wwwroot + '/blocks/xatbot/botman/controller.php?context=',
-    name : 'block_xatbot',
+    URL : M.cfg.wwwroot + '/blocks/chatbot/botman/controller.php?context=',
+    name : 'block_chatbot',
     isReceiving : 2,
 
     /**
-     * Initiates the connection with botman and adds events listeners
+     * Initiates the connection with BomMan and adds events listeners
      */
     init : function(Y, userId, contextId, courseId) {
         this.userId = userId;
@@ -23,8 +62,11 @@ M.block_xatbot = {
     	}, 200);
     },
 
+    /**
+     * Key pressed listener
+     */
     manageKeyPress : function(event) {
-        var self = M.block_xatbot;
+        var self = M.block_chatbot;
         //Check if key is enter
         if(event.which === 13 ) {
             //Ignore the default function of the enter key (Don't go to a new line)
@@ -33,8 +75,11 @@ M.block_xatbot = {
         }
     },
 
+    /**
+     * Comprovations before sending the message
+     */
     manageSend : function(event) {
-        var self = M.block_xatbot;
+        var self = M.block_chatbot;
         var input = $("#m_xat-inputDiv .m_xat-input")[0];
         //Check if the user is waiting a response and that the text is not empty
         if (self.isReceiving === 0 && input.value !== "") {
@@ -63,6 +108,9 @@ M.block_xatbot = {
         }
     },
 
+    /**
+     * Creates the message and sends it
+     */
     send : function(message, interactive = false) {
         var self = this;
         var boundary = (new Date()).getTime();
@@ -96,6 +144,11 @@ M.block_xatbot = {
         });
     },
 
+    /**
+     * Comprovations before printing the message.
+     * 
+     * @param {Object} message The message received from BotMan
+     */
     newRecievedMessage : function(message) {
         var self = this;
         if (message !== '') {
@@ -105,6 +158,11 @@ M.block_xatbot = {
     	}
     },
 
+    /**
+     * Prints the message in the chat.
+     * 
+     * @param {Object} message The message received from BotMan
+     */
     createNewMessage : function(message) {
         //Hide the typing indicator
     	this.hideLoading();
@@ -137,6 +195,11 @@ M.block_xatbot = {
     	this.checkVisibility(newMessage);
     },
 
+    /**
+     * Prints the buttons in the chat.
+     * 
+     * @param {Object} actions The actions inside the message received from BotMan
+     */
     createButton : function(actions) {
         var self = this;
         $('.m_xat-logs').append($('<div/>', {'class': 'm_xat m_xat-self'}).append(
@@ -152,8 +215,13 @@ M.block_xatbot = {
         //this.isReceiving = 3;
     },
 
+    /**
+     * Manages when a button is clicked.
+     * 
+     * @param {Event} event 
+     */
     buttonClick : function (event) {
-        var self = M.block_xatbot;
+        var self = M.block_chatbot;
         $('.m_xat-logs>.m_xat.m_xat-self:last-child').remove();
         $('.m_xat-logs').append(
             $('<div/>', {'class': 'm_xat m_xat-self'}).append(
@@ -163,6 +231,12 @@ M.block_xatbot = {
         self.send(event.data.message, true);
     },
 
+    /**
+     * Prints an attachment in the chat. It prints the resource name with a link, a separator, 
+     * and the course name with a link.
+     * 
+     * @param {Object} messages The messages received from BotMan
+     */
     createAttachment : function(messages) {
         if (messages[0].attachment.type == "file" && messages[2].attachment.type == "file") {
             $('.m_xat-logs').append(
@@ -179,11 +253,17 @@ M.block_xatbot = {
         }
     },
 
+    /**
+     * Show loading animation while waiting for a response.
+     */
     showLoading : function() {
         $('.m_xat-logs').append($('#m_xat-loadingGif'));
     	$("#m_xat-loadingGif").show();
     },
 
+    /**
+     * Hide loading animation.
+     */
     hideLoading : function() {
     	$('#m_xat-loadingGif').hide();
 
@@ -191,8 +271,11 @@ M.block_xatbot = {
     	$(".m_xat-input").attr("rows", "1");
     },
 
-    checkVisibility : function(message) {
-        var self = M.block_xatbot;
+    /**
+     * Scrolls the chat to display the last message.
+     */
+    checkVisibility : function() {
+        var self = M.block_chatbot;
     	// Scroll the view down a certain amount
     	$('.m_xat-logs').stop().animate({scrollTop: $('.m_xat-logs')[0].scrollHeight});
     	if (this.isReceiving === 2)

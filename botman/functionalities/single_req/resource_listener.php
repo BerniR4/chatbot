@@ -1,5 +1,44 @@
 <?php
 
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// This file is part of XatBotMoodle
+//
+// XatBotMoodle is a chatbot developed in Catalunya that helps search content in an easy,
+// interactive and conversational manner. This project implements a chatbot inside a block
+// for Moodle. Moodle is a Free Open source Learning Management System by Martin Dougiamas.
+// XatBotMoodle is a project initiated and leaded by Daniel Amo at the GRETEL research
+// group at La Salle Campus Barcelona, Universitat Ramon Llull.
+//
+// XatBotMoodle is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
+// of the La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
+// Contact info: Daniel Amo Filvà  danielamo @ gmail.com or daniel.amo @ salle.url.edu.
+
+/**
+ * Search resource functionality, single request mode.
+ *
+ * @package    block_chatbot
+ * @copyright  2020 Daniel Amo, Bernat Rovirosa
+ *  daniel.amo@salle.url.edu
+ * @copyright  2020 La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
+ * @author     Daniel Amo
+ * @author     Bernat Rovirosa
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
@@ -13,10 +52,11 @@ include_once __DIR__ . '/../dbhelpers/resource_dbhelper.php';
 
 class resource_listener {
 
+	/**
+	 * Using the parameters, this function decides what it needs to be searched and manages
+	 * the result of this search.
+	 */
     function handle_resource_request ($bot, $restype1, $restype2, $resname) {
-		//$start = microtime(true);
-		//$bot->reply(var_dump($bot));
-
 		$restype = null;
 
 		if ($restype1 != null) {
@@ -40,6 +80,7 @@ class resource_listener {
 			$courseid = $_GET['course'];
 		}
 
+		//Searches the resources depending on the parameters specified
 		switch ($restype) {
 			case TYPE_RESOURCE:
 				$rs_res = resource_dbhelper::search_resource_files($resname, null, $courseid);
@@ -59,37 +100,40 @@ class resource_listener {
 				$rs_asg = resource_dbhelper::search_resource_assign($resname, null, $courseid);
 
 		}
+		
+		$res_b = false;
+		$url_b = false;
+		$asg_b = false;
 
+		//Checks the results of the search
 		if ($rs_res != null && $rs_res->valid()) {
 			//After create_messages, the result set is emptied, that's why it is needed assign a value to know it was
 			//used (in order to send the correct message)
-			$rs_res = self::create_messages($rs_res, TYPE_RESOURCE, $bot);		
+			$res_b = self::create_messages($rs_res, TYPE_RESOURCE, $bot);		
 		}
 
 		if ($rs_url != null && $rs_url->valid()) {
-			$rs_url = self::create_messages($rs_url, TYPE_URL, $bot);
+			$url_b = self::create_messages($rs_url, TYPE_URL, $bot);
 		}
 		
 		if ($rs_asg != null && $rs_asg->valid()) {
-			$rs_asg = self::create_messages($rs_asg, TYPE_ASSIGN, $bot);
+			$asg_b = self::create_messages($rs_asg, TYPE_ASSIGN, $bot);
 		}
 
-        if ($rs_res == null && $rs_url == null && $rs_asg == null) {
-			$bot->reply(get_string('fullnoresourcematch', 'block_xatbot'));
+		if ($res_b == null && $url_b == null && $asg_b == null) {
+			$bot->reply(get_string('fullnoresourcematch', 'block_chatbot'));
 		}
 
-        //$time_elapsed_secs = microtime(true) - $start;
-        //$bot->reply('Temps: ' . $time_elapsed_secs);
-
+		//Creates log
         global $PAGE;
         $context = context::instance_by_id($_GET['context'], IGNORE_MISSING);
 		if ($context != false && $context->get_course_context(false) 
 				&& (is_viewing($context) || is_enrolled($context))) {
-            $event = \block_xatbot\event\resource_searched::create(array(
+            $event = \block_chatbot\event\resource_searched::create(array(
             'context' => $context, 
             ));
         } else {
-            $event = \block_xatbot\event\resource_searched::create(array(
+            $event = \block_chatbot\event\resource_searched::create(array(
                 'context' => $PAGE->context, 
             ));
         }
@@ -98,6 +142,13 @@ class resource_listener {
 
     }
 
+	/**
+	 * Creates the message and sends it to the user.
+	 * 
+	 * @param Object	$rs		result of the search
+	 * @param integer	$type	type of the result (file, url or assign)
+	 * @param BotMan	$bot	the botman class used to send the messages
+	 */
     public function create_messages($rs, $type, $bot) {
 		global $CFG, $USER;
 		$aux = null;
@@ -112,21 +163,21 @@ class resource_listener {
 						$url = $CFG->wwwroot . '/pluginfile.php/' . $record->cid . '/mod_resource/content/' 
 							. $record->revision . '/' . $record->filename;
 						if ($aux == null) {
-							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_resource')));
+							$bot->reply(get_string('fullresourcematch', 'block_chatbot', get_string('pluginname', 'mod_resource')));
 						}
 						break;
 
 					case TYPE_URL:
 						$url = $CFG->wwwroot . '/mod/url/view.php?id=' . $record->id;
 						if ($aux == null) {
-							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_url')));
+							$bot->reply(get_string('fullresourcematch', 'block_chatbot', get_string('pluginname', 'mod_url')));
 						}
 						break;
 
 					case TYPE_ASSIGN: 
 						$url = $CFG->wwwroot . '/mod/assign/view.php?id=' . $record->id;
 						if ($aux == null) {
-							$bot->reply(get_string('fullresourcematch', 'block_xatbot', get_string('pluginname', 'mod_assign')));
+							$bot->reply(get_string('fullresourcematch', 'block_chatbot', get_string('pluginname', 'mod_assign')));
 						}
 						break;
 
@@ -141,7 +192,7 @@ class resource_listener {
 				$bot->reply($message);
 				
 				//Send ' - course: ' separator
-				$bot->reply(get_string('compresourcematchcourse', 'block_xatbot'));
+				$bot->reply(get_string('compresourcematchcourse', 'block_chatbot'));
 
 				//Send Course name with link
 				$attachment = new File($CFG->wwwroot . '/course/view.php?id=' . $record->course, [
