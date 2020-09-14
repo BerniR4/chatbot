@@ -46,7 +46,7 @@ $string['chatbot:myaddinstance'] = 'Add a new Chatbot Block to the My Moodle pag
 $string['blockstring'] = 'Edit';
 
 //Full static messages
-$string['fullwelcome1'] = 'Hi! I\'m LSBot, a Chatbot who will help you retrieve information from Moodle.';
+$string['fullwelcome1'] = 'Hi! I\'m LSBot, a Chatbot that will help you retrieve information from Moodle.';
 $string['fullwelcome2'] = 'To search for a resource, use the keyword "Resource", followed by what you want 
         to search for. For example: "Resource test"';
 $string['fullfallback'] = 'Sorry, I don\'t understand what you said.';
