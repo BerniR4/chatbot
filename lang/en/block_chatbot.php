@@ -28,7 +28,7 @@
 // Contact info: Daniel Amo Filvà  danielamo @ gmail.com or daniel.amo @ salle.url.edu.
 
 /**
- * Strings for component 'block_chatbot', language 'ca'
+ * Strings for component 'block_chatbot', language 'en'
  *
  * @package    block_chatbot
  * @copyright  2020 Daniel Amo, Bernat Rovirosa
