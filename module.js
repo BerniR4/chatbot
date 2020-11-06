@@ -13,15 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 //
-// This file is part of XatBotMoodle
+// This file is part of CfM - Chatbot for Moodle
 //
-// XatBotMoodle is a chatbot developed in Catalunya that helps search content in an easy,
+// CfM is a chatbot developed in Catalunya that helps search content in an easy,
 // interactive and conversational manner. This project implements a chatbot inside a block
 // for Moodle. Moodle is a Free Open source Learning Management System by Martin Dougiamas.
-// XatBotMoodle is a project initiated and leaded by Daniel Amo at the GRETEL research
+// CfM is a project initiated and leaded by Daniel Amo at the GRETEL research
 // group at La Salle Campus Barcelona, Universitat Ramon Llull.
 //
-// XatBotMoodle is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
+// CfM is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
 // of the La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
 // Contact info: Daniel Amo Filvà  danielamo @ gmail.com or daniel.amo @ salle.url.edu.
 
@@ -52,8 +52,8 @@ M.block_chatbot = {
 
         var self = this;
         //Add listeners
-        $('textarea.m_xat-input').on('keypress', this.manageKeyPress);
-        $('#m_xat-rec').on('click', this.manageSend);
+        $('textarea.m_chat-input').on('keypress', this.manageKeyPress);
+        $('#m_chat-rec').on('click', this.manageSend);
 
         this.send('welcome_message');
 
@@ -80,21 +80,21 @@ M.block_chatbot = {
      */
     manageSend : function(event) {
         var self = M.block_chatbot;
-        var input = $("#m_xat-inputDiv .m_xat-input")[0];
+        var input = $("#m_chat-inputDiv .m_chat-input")[0];
         //Check if the user is waiting a response and that the text is not empty
         if (self.isReceiving === 0 && input.value !== "") {
             //Call the method for sending a message, pass in the text from the user
             self.isReceiving = 1;
 
             //Delete the buttons if any
-            $('.m_xat-logs>.m_xat.m_xat-self:last-child').remove();
+            $('.m_chat-logs>.m_chat.m_chat-self:last-child').remove();
             // Create a div with the text that the user typed in
-            $('.m_xat-logs').append(
-                $('<div/>', {'class': 'm_xat m_xat-self'}).append(
-                    $('<p/>', {'class': 'm_xat-message', 'text': input.value})));
+            $('.m_chat-logs').append(
+                $('<div/>', {'class': 'm_chat m_chat-self'}).append(
+                    $('<p/>', {'class': 'm_chat-message', 'text': input.value})));
 
             // Find the last message in the chatlogs
-            var $sentMessage = $(".m_xat-logs .m_xat").last();
+            var $sentMessage = $(".m_chat-logs .m_chat").last();
 
             self.checkVisibility($sentMessage);
             setTimeout(function() {
@@ -103,7 +103,7 @@ M.block_chatbot = {
             self.send(input.value);
 
             //Reset the size of the text area and clear it
-            $(".m_xat-input").attr("rows", "1");
+            $(".m_chat-input").attr("rows", "1");
             input.value = "";
         }
     },
@@ -175,9 +175,9 @@ M.block_chatbot = {
                 i += 3;
             } else {
                 //Append a new div to the chatlogs body
-                $('.m_xat-logs').append(
-                    $('<div/>', {'class': 'm_xat m_xat-bot'}).append(
-                        $('<p/>', {'class': 'm_xat-message', 'text': message.messages[i].text})
+                $('.m_chat-logs').append(
+                    $('<div/>', {'class': 'm_chat m_chat-bot'}).append(
+                        $('<p/>', {'class': 'm_chat-message', 'text': message.messages[i].text})
                     )
                 );
                     
@@ -189,7 +189,7 @@ M.block_chatbot = {
     		
     	}
     	// Find the last message in the chatlogs
-    	var newMessage = $(".m_xat-logs .m_xat").last();
+    	var newMessage = $(".m_chat-logs .m_chat").last();
 
     	// Call the method to see if the message is visible
     	this.checkVisibility(newMessage);
@@ -202,14 +202,14 @@ M.block_chatbot = {
      */
     createButton : function(actions) {
         var self = this;
-        $('.m_xat-logs').append($('<div/>', {'class': 'm_xat m_xat-self'}).append(
-            $('<div/>', {'class': 'm_xat-buttonContainer'})
+        $('.m_chat-logs').append($('<div/>', {'class': 'm_chat m_chat-self'}).append(
+            $('<div/>', {'class': 'm_chat-buttonContainer'})
         ));
         for (i = 0; i < actions.length; i++) {
-            $('.m_xat-logs>.m_xat.m_xat-self:last-child>.m_xat-buttonContainer').append(
-                $('<div/>', {'class': 'm_xat-button', 'text': actions[i].name})
+            $('.m_chat-logs>.m_chat.m_chat-self:last-child>.m_chat-buttonContainer').append(
+                $('<div/>', {'class': 'm_chat-button', 'text': actions[i].name})
             );
-            $('.m_xat-logs>.m_xat.m_xat-self:last-child .m_xat-button:last-child')
+            $('.m_chat-logs>.m_chat.m_chat-self:last-child .m_chat-button:last-child')
                 .on('click', {message: actions[i].value, text: actions[i].name}, self.buttonClick);
         }
         //this.isReceiving = 3;
@@ -222,10 +222,10 @@ M.block_chatbot = {
      */
     buttonClick : function (event) {
         var self = M.block_chatbot;
-        $('.m_xat-logs>.m_xat.m_xat-self:last-child').remove();
-        $('.m_xat-logs').append(
-            $('<div/>', {'class': 'm_xat m_xat-self'}).append(
-                $('<p/>', {'class': 'm_xat-message', 'text': event.data.text})
+        $('.m_chat-logs>.m_chat.m_chat-self:last-child').remove();
+        $('.m_chat-logs').append(
+            $('<div/>', {'class': 'm_chat m_chat-self'}).append(
+                $('<p/>', {'class': 'm_chat-message', 'text': event.data.text})
             )
         );
         self.send(event.data.message, true);
@@ -239,9 +239,9 @@ M.block_chatbot = {
      */
     createAttachment : function(messages) {
         if (messages[0].attachment.type == "file" && messages[2].attachment.type == "file") {
-            $('.m_xat-logs').append(
-                $('<div/>', {'class': 'm_xat m_xat-bot'}).append(
-                    $('<p/>', {'class': 'm_xat-message'}).append(
+            $('.m_chat-logs').append(
+                $('<div/>', {'class': 'm_chat m_chat-bot'}).append(
+                    $('<p/>', {'class': 'm_chat-message'}).append(
                         $('<a/>', {'text': messages[0].text, 'href': messages[0].attachment.url,  
                             'target': '_blank'})
                     ).append(messages[1].text).append(
@@ -257,18 +257,18 @@ M.block_chatbot = {
      * Show loading animation while waiting for a response.
      */
     showLoading : function() {
-        $('.m_xat-logs').append($('#m_xat-loadingGif'));
-    	$("#m_xat-loadingGif").show();
+        $('.m_chat-logs').append($('#m_chat-loadingGif'));
+    	$("#m_chat-loadingGif").show();
     },
 
     /**
      * Hide loading animation.
      */
     hideLoading : function() {
-    	$('#m_xat-loadingGif').hide();
+    	$('#m_chat-loadingGif').hide();
 
     	// reset the size of the text area
-    	$(".m_xat-input").attr("rows", "1");
+    	$(".m_chat-input").attr("rows", "1");
     },
 
     /**
@@ -277,7 +277,7 @@ M.block_chatbot = {
     checkVisibility : function() {
         var self = M.block_chatbot;
     	// Scroll the view down a certain amount
-    	$('.m_xat-logs').stop().animate({scrollTop: $('.m_xat-logs')[0].scrollHeight});
+    	$('.m_chat-logs').stop().animate({scrollTop: $('.m_chat-logs')[0].scrollHeight});
     	if (this.isReceiving === 2)
     		this.isReceiving = 0;
     }

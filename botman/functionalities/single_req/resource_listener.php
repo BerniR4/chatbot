@@ -15,15 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 //
-// This file is part of XatBotMoodle
+// This file is part of CfM - Chatbot for Moodle
 //
-// XatBotMoodle is a chatbot developed in Catalunya that helps search content in an easy,
+// CfM is a chatbot developed in Catalunya that helps search content in an easy,
 // interactive and conversational manner. This project implements a chatbot inside a block
 // for Moodle. Moodle is a Free Open source Learning Management System by Martin Dougiamas.
-// XatBotMoodle is a project initiated and leaded by Daniel Amo at the GRETEL research
+// CfM is a project initiated and leaded by Daniel Amo at the GRETEL research
 // group at La Salle Campus Barcelona, Universitat Ramon Llull.
 //
-// XatBotMoodle is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
+// CfM is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
 // of the La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
 // Contact info: Daniel Amo Filvà  danielamo @ gmail.com or daniel.amo @ salle.url.edu.
 

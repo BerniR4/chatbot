@@ -15,15 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 //
-// This file is part of XatBotMoodle
+// This file is part of CfM - Chatbot for Moodle
 //
-// XatBotMoodle is a chatbot developed in Catalunya that helps search content in an easy,
+// CfM is a chatbot developed in Catalunya that helps search content in an easy,
 // interactive and conversational manner. This project implements a chatbot inside a block
 // for Moodle. Moodle is a Free Open source Learning Management System by Martin Dougiamas.
-// XatBotMoodle is a project initiated and leaded by Daniel Amo at the GRETEL research
+// CfM is a project initiated and leaded by Daniel Amo at the GRETEL research
 // group at La Salle Campus Barcelona, Universitat Ramon Llull.
 //
-// XatBotMoodle is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
+// CfM is copyrighted 2020 by Daniel Amo and Bernat Rovirosa
 // of the La Salle Campus Barcelona, Universitat Ramon Llull https://www.salleurl.edu
 // Contact info: Daniel Amo Filvà  danielamo @ gmail.com or daniel.amo @ salle.url.edu.
 
@@ -78,25 +78,25 @@ class block_chatbot extends block_base {
 		global $CFG;
 		return 	'<!DOCTYPE html>'
 			.'<html>'
-				.'<div class="m_xat-body">'
-					.'<div class="m_xat-headerBar">'
-						.'<div class="m_xat-user-photo"><img src="' . $CFG->wwwroot . '/blocks/chatbot/images/bot_img.jpg"></div>'
-						.'<p class="m_xat-title">LSBot</p>'
+				.'<div class="m_chat-body">'
+					.'<div class="m_chat-headerBar">'
+						.'<div class="m_chat-user-photo"><img src="' . $CFG->wwwroot . '/blocks/chatbot/images/bot_img.jpg"></div>'
+						.'<p class="m_chat-title">' . get_string('chatbot', 'block_chatbot') . '</p>'
 					.'</div>'
-					.'<div class="m_xat-box">'
-						.'<div class="m_xat-logs">'
-							.'<div class="m_xat m_xat-bot" id="m_xat-loadingGif" style="display: none;">'
-								.'<div class="m_xat-gif"><img src="' . $CFG->wwwroot . '/blocks/chatbot/images/loading.gif"></div>'
+					.'<div class="m_chat-box">'
+						.'<div class="m_chat-logs">'
+							.'<div class="m_chat m_chat-bot" id="m_chat-loadingGif" style="display: none;">'
+								.'<div class="m_chat-gif"><img src="' . $CFG->wwwroot . '/blocks/chatbot/images/loading.gif"></div>'
 							.'</div>'
 						.'</div>'
 					.'</div>'
-					.'<div class="m_xat-form">'
-						.'<div id="m_xat-inputDiv">'
-							.'<div id="m_xat-buttonDiv"></div>'
-							.'<textarea class="m_xat-input" placeholder="Escriu un missatge..." rows="1" data-min-rows="1"></textarea>'
+					.'<div class="m_chat-form">'
+						.'<div id="m_chat-inputDiv">'
+							.'<div id="m_chat-buttonDiv"></div>'
+							.'<textarea class="m_chat-input" placeholder="Escriu un missatge..." rows="1" data-min-rows="1"></textarea>'
 						.'</div>'
-						.'<div id="m_xat-form-buttons">'
-							.'<input width="40" height="40" type ="image" id="m_xat-rec" src="' . $CFG->wwwroot . '/blocks/chatbot/images/send.png">'
+						.'<div id="m_chat-form-buttons">'
+							.'<input width="40" height="40" type ="image" id="m_chat-rec" src="' . $CFG->wwwroot . '/blocks/chatbot/images/send.png">'
 						.'</div>'
 					.'</div>'
 
